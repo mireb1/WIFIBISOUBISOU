@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Automatisée des Routeurs - WiFi Bisou Bisou</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <style>
+        .router-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .router-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .router-status {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .status-online {
+            background: #28a745;
+            color: white;
+        }
+        .status-offline {
+            background: #dc3545;
+            color: white;
+        }
+        .status-suspended {
+            background: #ffc107;
+            color: #212529;
+        }
+        .client-info {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .payment-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 10px;
+        }
+        .payment-due {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+        }
+        .payment-ok {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .payment-overdue {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        .auto-actions {
+            background: #e9ecef;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+        .countdown-timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #dc3545;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        .monthly-plan {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        .monthly-plan h2 {
+            margin-bottom: 1rem;
+        }
+        .monthly-plan .price {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffd100;
+        }
+        .control-panel {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+        }
+        .control-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        .control-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-suspend {
+            background: #ffc107;
+            color: #212529;
+        }
+        .btn-reconnect {
+            background: #28a745;
+            color: white;
+        }
+        .btn-disconnect {
+            background: #dc3545;
+            color: white;
+        }
+        .automation-settings {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0.5rem 0;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .toggle-switch.active {
+            background: #28a745;
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        .toggle-switch.active::after {
+            transform: translateX(30px);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-wifi"></i>
+                <span>WiFi Bisou Bisou - Gestion Routeurs</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="admin.html">Tableau de Bord</a></li>
+                <li><a href="router-management.html">Gestion Routeurs</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 100px;">
+        <h1 style="text-align: center; color: #007bff; margin-bottom: 2rem;">
+            <i class="fas fa-cogs"></i> Gestion Automatisée des Routeurs
+        </h1>
+
+        <!-- Forfait Mensuel -->
+        <div class="monthly-plan">
+            <h2>🇨🇩 Forfait Mensuel Unique</h2>
+            <div class="price">15,000 FC</div>
+            <p>Accès illimité pendant 30 jours</p>
+            <p>Coupure automatique en cas de non-paiement</p>
+            <button class="btn btn-primary" onclick="processMonthlyPayment()" style="margin-top: 1rem;">
+                <i class="fas fa-credit-card"></i> Payer avec Flexpaie
+            </button>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-routers">25</div>
+                <div class="stat-label">Routeurs Actifs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="suspended-routers">3</div>
+                <div class="stat-label">Suspendus</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="overdue-payments">7</div>
+                <div class="stat-label">Paiements en Retard</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="monthly-revenue">375,000</div>
+                <div class="stat-label">Revenus Mensuels (FC)</div>
+            </div>
+        </div>
+
+        <!-- Panneau de Contrôle Automatique -->
+        <div class="control-panel">
+            <h3><i class="fas fa-robot"></i> Panneau de Contrôle Automatique</h3>
+            <div class="automation-settings">
+                <div class="setting-item">
+                    <span>Coupure automatique après échéance</span>
+                    <div class="toggle-switch active" onclick="toggleAutomation(this)"></div>
+                </div>
+                <div class="setting-item">
+                    <span>Rappels de paiement automatiques</span>
+                    <div class="toggle-switch active" onclick="toggleAutomation(this)"></div>
+                </div>
+                <div class="setting-item">
+                    <span>Reconnexion automatique après paiement</span>
+                    <div class="toggle-switch active" onclick="toggleAutomation(this)"></div>
+                </div>
+                <div class="setting-item">
+                    <span>Notifications SMS/Email</span>
+                    <div class="toggle-switch" onclick="toggleAutomation(this)"></div>
+                </div>
+            </div>
+            <div class="control-buttons">
+                <button class="control-btn btn-suspend" onclick="suspendOverdueConnections()">
+                    <i class="fas fa-pause"></i> Suspendre Retards
+                </button>
+                <button class="control-btn btn-reconnect" onclick="reconnectPaidConnections()">
+                    <i class="fas fa-play"></i> Reconnecter Payés
+                </button>
+                <button class="control-btn btn-disconnect" onclick="disconnectAllUnpaid()">
+                    <i class="fas fa-stop"></i> Couper Non-Payés
+                </button>
+            </div>
+        </div>
+
+        <!-- Liste des Routeurs -->
+        <div class="router-grid" id="routers-grid">
+            <!-- Les routeurs seront générés dynamiquement -->
+        </div>
+    </div>
+
+    <!-- Modal de Paiement -->
+    <div id="payment-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Paiement Forfait Mensuel</h3>
+            <div id="payment-details">
+                <div class="monthly-plan" style="margin: 1rem 0;">
+                    <h4>Forfait Mensuel</h4>
+                    <div class="price" style="font-size: 2rem;">15,000 FC</div>
+                    <p>Valable 30 jours</p>
+                </div>
+                <div class="client-info">
+                    <h4>Informations Client</h4>
+                    <input type="text" id="client-name" placeholder="Nom du client" class="form-input">
+                    <input type="text" id="client-phone" placeholder="Téléphone" class="form-input">
+                    <input type="text" id="router-id" placeholder="ID du routeur" class="form-input">
+                </div>
+                <button class="btn btn-primary" onclick="redirectToFlexpaie()" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-credit-card"></i> Payer 15,000 FC avec Flexpaie
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmation -->
+    <div id="confirm-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Confirmation Action</h3>
+            <p id="confirm-message">Êtes-vous sûr de vouloir effectuer cette action ?</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+                <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+                <button class="btn btn-primary" onclick="confirmAction()">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="router-automation.js"></script>
+    
+    <style>
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+    </style>
+</body>
+</html>

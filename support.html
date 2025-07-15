@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - WiFi Bisou Bisou</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <style>
+        .support-header {
+            background: linear-gradient(135deg, var(--rdc-blue), var(--primary-color));
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+        
+        .support-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .support-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .support-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .support-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .faq-item {
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            background: var(--light-color);
+            padding: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .faq-answer {
+            padding: 1rem;
+            background: white;
+            display: none;
+        }
+        
+        .faq-answer.active {
+            display: block;
+        }
+        
+        .contact-info {
+            background: var(--light-color);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+        
+        .contact-info h4 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .ticket-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .status-online {
+            background: #28a745;
+        }
+        
+        .status-offline {
+            background: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-wifi"></i>
+                <span>WiFi Bisou Bisou</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="admin.html">Admin</a></li>
+                <li><a href="router-management.html">Routeurs</a></li>
+                <li><a href="support.html" class="active">Support</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main style="margin-top: 80px;">
+        <div class="support-header">
+            <div class="container">
+                <h1><i class="fas fa-headset"></i> Centre de Support</h1>
+                <p>Assistance 24/7 pour tous vos besoins WiFi</p>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="support-grid">
+                <!-- FAQ -->
+                <div class="support-card">
+                    <h3><i class="fas fa-question-circle"></i> Questions Fréquentes</h3>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Comment utiliser mon voucher WiFi ?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>1. Connectez-vous au réseau "WiFi-Bisou-Bisou"</p>
+                            <p>2. Ouvrez votre navigateur</p>
+                            <p>3. Entrez votre code voucher dans la page de connexion</p>
+                            <p>4. Cliquez sur "Se connecter"</p>
+                            <p>5. Profitez de votre connexion!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Combien de temps mon voucher est-il valide ?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>• Forfait Basique : 24h pour activer, 1h de connexion</p>
+                            <p>• Forfait Premium : 48h pour activer, 6h de connexion</p>
+                            <p>• Forfait Journalier : 72h pour activer, 24h de connexion</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Que faire si mon voucher ne fonctionne pas ?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>1. Vérifiez que vous êtes connecté au bon réseau</p>
+                            <p>2. Assurez-vous que votre voucher n'a pas expiré</p>
+                            <p>3. Contactez notre support si le problème persiste</p>
+                            <p>4. Gardez votre reçu de paiement pour référence</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Comment obtenir un remboursement ?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Les remboursements sont possibles dans les 24h suivant l'achat pour les vouchers non utilisés. Contactez notre support avec votre code de transaction Flexpaie.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statut du Service -->
+                <div class="support-card">
+                    <h3><i class="fas fa-server"></i> Statut du Service</h3>
+                    
+                    <div class="service-status">
+                        <div class="status-item">
+                            <span class="status-indicator status-online"></span>
+                            <strong>Réseau WiFi Principal</strong>
+                            <span style="float: right; color: #28a745;">En ligne</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-indicator status-online"></span>
+                            <strong>Système de Paiement</strong>
+                            <span style="float: right; color: #28a745;">Opérationnel</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-indicator status-online"></span>
+                            <strong>Génération de Vouchers</strong>
+                            <span style="float: right; color: #28a745;">Fonctionnel</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-indicator status-online"></span>
+                            <strong>Support Client</strong>
+                            <span style="float: right; color: #28a745;">Disponible</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info">
+                        <h4>Informations de Contact</h4>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>assistance@wifibisoubisou.cd</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>+243 (0) 81 234 5678</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-whatsapp"></i>
+                            <span>+243 (0) 81 234 5678</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Support 24/7 disponible</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zones WiFi -->
+                <div class="support-card">
+                    <h3><i class="fas fa-map-marker-alt"></i> Zones de Couverture</h3>
+                    
+                    <div class="zone-list">
+                        <div class="zone-item">
+                            <h4>Zone Centre-Ville</h4>
+                            <p><i class="fas fa-map-marker-alt"></i> Avenue Kasa-Vubu</p>
+                            <p><i class="fas fa-signal"></i> Signal : Excellent</p>
+                            <p><i class="fas fa-users"></i> Capacité : 200 utilisateurs</p>
+                        </div>
+                        
+                        <div class="zone-item">
+                            <h4>Zone Université</h4>
+                            <p><i class="fas fa-map-marker-alt"></i> Campus UNIKIN</p>
+                            <p><i class="fas fa-signal"></i> Signal : Très bon</p>
+                            <p><i class="fas fa-users"></i> Capacité : 500 utilisateurs</p>
+                        </div>
+                        
+                        <div class="zone-item">
+                            <h4>Zone Marché Central</h4>
+                            <p><i class="fas fa-map-marker-alt"></i> Marché Central</p>
+                            <p><i class="fas fa-signal"></i> Signal : Bon</p>
+                            <p><i class="fas fa-users"></i> Capacité : 150 utilisateurs</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tutoriels -->
+                <div class="support-card">
+                    <h3><i class="fas fa-play-circle"></i> Tutoriels Vidéo</h3>
+                    
+                    <div class="tutorial-list">
+                        <div class="tutorial-item">
+                            <i class="fas fa-video"></i>
+                            <div>
+                                <h4>Comment acheter un voucher WiFi</h4>
+                                <p>Guide complet pour l'achat via Flexpaie</p>
+                                <button class="btn btn-primary btn-sm">Voir</button>
+                            </div>
+                        </div>
+                        
+                        <div class="tutorial-item">
+                            <i class="fas fa-video"></i>
+                            <div>
+                                <h4>Utilisation du voucher WiFi</h4>
+                                <p>Étapes pour se connecter au réseau</p>
+                                <button class="btn btn-primary btn-sm">Voir</button>
+                            </div>
+                        </div>
+                        
+                        <div class="tutorial-item">
+                            <i class="fas fa-video"></i>
+                            <div>
+                                <h4>Résolution des problèmes courants</h4>
+                                <p>Solutions aux problèmes de connexion</p>
+                                <button class="btn btn-primary btn-sm">Voir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulaire de Support -->
+            <div class="ticket-form">
+                <h2><i class="fas fa-ticket-alt"></i> Créer un Ticket de Support</h2>
+                <form id="support-form">
+                    <div class="form-group">
+                        <label for="user-name">Nom complet :</label>
+                        <input type="text" id="user-name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="user-email">Email :</label>
+                        <input type="email" id="user-email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="issue-category">Catégorie du problème :</label>
+                        <select id="issue-category" required>
+                            <option value="">Sélectionnez une catégorie</option>
+                            <option value="connection">Problème de connexion</option>
+                            <option value="voucher">Voucher défectueux</option>
+                            <option value="payment">Problème de paiement</option>
+                            <option value="speed">Vitesse lente</option>
+                            <option value="other">Autre</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="voucher-code">Code du voucher (si applicable) :</label>
+                        <input type="text" id="voucher-code" placeholder="WIFI-2025-XXXXXX">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="issue-description">Description du problème :</label>
+                        <textarea id="issue-description" rows="5" required></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Envoyer le Ticket
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>WiFi Bisou Bisou</h4>
+                    <p>Connexion WiFi rapide et fiable en République Démocratique du Congo</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <p>Email: assistance@wifibisoubisou.cd</p>
+                    <p>Téléphone: +243 (0) 81 234 5678</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Zones de Couverture</h4>
+                    <p>Centre-Ville • Université • Marché Central</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 WiFi Bisou Bisou - Adaptation RDC 🇨🇩</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('i');
+            
+            if (answer.classList.contains('active')) {
+                answer.classList.remove('active');
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            } else {
+                // Fermer toutes les autres réponses
+                document.querySelectorAll('.faq-answer').forEach(ans => ans.classList.remove('active'));
+                document.querySelectorAll('.faq-question i').forEach(ic => {
+                    ic.classList.remove('fa-chevron-up');
+                    ic.classList.add('fa-chevron-down');
+                });
+                
+                // Ouvrir la réponse sélectionnée
+                answer.classList.add('active');
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            }
+        }
+
+        document.getElementById('support-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simuler l'envoi du ticket
+            alert('Votre ticket de support a été créé avec succès! Notre équipe vous contactera dans les 24h.');
+            
+            // Réinitialiser le formulaire
+            this.reset();
+        });
+    </script>
+</body>
+</html>

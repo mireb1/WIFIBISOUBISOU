@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Admin - WiFi Bisou Bisou</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <style>
+        .admin-header {
+            background: linear-gradient(135deg, var(--rdc-blue), var(--primary-color));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .admin-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .admin-card:hover {
+            transform: translateY(-5px);
+        }
+        .admin-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .metric-card {
+            background: var(--light-color);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--rdc-blue);
+        }
+        .metric-label {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--light-color);
+        }
+        .transaction-amount {
+            font-weight: bold;
+            color: var(--success-color);
+        }
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--light-color);
+        }
+        .user-status {
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .status-active {
+            background: var(--success-color);
+            color: white;
+        }
+        .status-inactive {
+            background: var(--secondary-color);
+            color: white;
+        }
+        .zone-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--light-color);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+        .zone-info h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        .zone-stats {
+            display: flex;
+            gap: 1rem;
+        }
+        .zone-stat {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+        .alert-item {
+            background: var(--warning-color);
+            color: var(--dark-color);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .equipment-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .status-online {
+            background: var(--success-color);
+        }
+        .status-offline {
+            background: var(--danger-color);
+        }
+        .status-maintenance {
+            background: var(--warning-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <h1><i class="fas fa-tachometer-alt"></i> Tableau de Bord Administrateur</h1>
+        <p>Gestion complète du système WiFi Bisou Bisou</p>
+    </div>
+
+    <div class="container">
+        <!-- Métriques globales -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value">1,234</div>
+                <div class="metric-label">Utilisateurs Actifs</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">45,678 FC</div>
+                <div class="metric-label">Revenus Aujourd'hui</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">89</div>
+                <div class="metric-label">Connexions Live</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">15</div>
+                <div class="metric-label">Zones WiFi</div>
+            </div>
+        </div>
+
+        <!-- Grille principale -->
+        <div class="admin-grid">
+            <!-- Connexions en temps réel -->
+            <div class="admin-card">
+                <h3><i class="fas fa-users"></i> Connexions Live</h3>
+                <div class="live-connections">
+                    <div class="connection-item">
+                        <div>
+                            <strong>User_001</strong>
+                            <div style="font-size: 0.9rem; color: var(--secondary-color);">Zone Centre-Ville</div>
+                        </div>
+                        <div>
+                            <span class="user-status status-active">ACTIF</span>
+                            <div style="font-size: 0.8rem; color: var(--secondary-color);">2h 15min</div>
+                        </div>
+                    </div>
+                    <div class="connection-item">
+                        <div>
+                            <strong>User_002</strong>
+                            <div style="font-size: 0.9rem; color: var(--secondary-color);">Zone Université</div>
+                        </div>
+                        <div>
+                            <span class="user-status status-active">ACTIF</span>
+                            <div style="font-size: 0.8rem; color: var(--secondary-color);">45min</div>
+                        </div>
+                    </div>
+                    <div class="connection-item">
+                        <div>
+                            <strong>User_003</strong>
+                            <div style="font-size: 0.9rem; color: var(--secondary-color);">Zone Marché</div>
+                        </div>
+                        <div>
+                            <span class="user-status status-active">ACTIF</span>
+                            <div style="font-size: 0.8rem; color: var(--secondary-color);">1h 30min</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions récentes -->
+            <div class="admin-card">
+                <h3><i class="fas fa-money-bill-wave"></i> Transactions Flexpaie</h3>
+                <div class="transactions">
+                    <div class="transaction-item">
+                        <div>
+                            <strong>Forfait Premium</strong>
+                            <div style="font-size: 0.9rem; color: var(--secondary-color);">il y a 5 min</div>
+                        </div>
+                        <div class="transaction-amount">+1,500 FC</div>
+                    </div>
+                    <div class="transaction-item">
+                        <div>
+                            <strong>Forfait Basique</strong>
+                            <div style="font-size: 0.9rem; color: var(--secondary-color);">il y a 12 min</div>
+                        </div>
+                        <div class="transaction-amount">+500 FC</div>
+                    </div>
+                    <div class="transaction-item">
+                        <div>
+                            <strong>Forfait Journalier</strong>
+                            <div style="font-size: 0.9rem; color: var(--secondary-color);">il y a 25 min</div>
+                        </div>
+                        <div class="transaction-amount">+3,000 FC</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Équipements -->
+            <div class="admin-card">
+                <h3><i class="fas fa-server"></i> Équipements d'Authentification</h3>
+                <div class="equipment-list">
+                    <div class="equipment-item" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
+                        <div>
+                            <strong>Routeur Principal</strong>
+                            <div style="font-size: 0.9rem; color: var(--secondary-color);">192.168.1.1</div>
+                        </div>
+                        <div class="equipment-status">
+                            <div class="status-dot status-online"></div>
+                            <span>En ligne</span>
+                        </div>
+                    </div>
+                    <div class="equipment-item" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
+                        <div>
+                            <strong>Routeur Secondaire</strong>
+                            <div style="font-size: 0.9rem; color: var(--secondary-color);">192.168.1.2</div>
+                        </div>
+                        <div class="equipment-status">
+                            <div class="status-dot status-maintenance"></div>
+                            <span>Maintenance</span>
+                        </div>
+                    </div>
+                    <div class="equipment-item" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
+                        <div>
+                            <strong>Point d'Accès WiFi</strong>
+                            <div style="font-size: 0.9rem; color: var(--secondary-color);">192.168.1.10</div>
+                        </div>
+                        <div class="equipment-status">
+                            <div class="status-dot status-online"></div>
+                            <span>En ligne</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Surveillance système -->
+            <div class="admin-card">
+                <h3><i class="fas fa-chart-line"></i> Surveillance Temps Réel</h3>
+                <div class="monitoring-stats">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span>Bande passante utilisée:</span>
+                        <span style="font-weight: bold; color: var(--warning-color);">75%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span>Latence moyenne:</span>
+                        <span style="font-weight: bold; color: var(--success-color);">12ms</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span>Uptime système:</span>
+                        <span style="font-weight: bold; color: var(--success-color);">99.8%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span>Erreurs réseau:</span>
+                        <span style="font-weight: bold; color: var(--danger-color);">3</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zones WiFi -->
+            <div class="admin-card">
+                <h3><i class="fas fa-map-marker-alt"></i> Zones WiFi</h3>
+                <div class="zones-list">
+                    <div class="zone-item">
+                        <div class="zone-info">
+                            <h4>Zone Centre-Ville</h4>
+                            <div class="zone-stats">
+                                <span class="zone-stat">45/100 utilisateurs</span>
+                                <span class="zone-stat">Signal: Excellent</span>
+                            </div>
+                        </div>
+                        <div class="equipment-status">
+                            <div class="status-dot status-online"></div>
+                            <span>Actif</span>
+                        </div>
+                    </div>
+                    <div class="zone-item">
+                        <div class="zone-info">
+                            <h4>Zone Université</h4>
+                            <div class="zone-stats">
+                                <span class="zone-stat">78/150 utilisateurs</span>
+                                <span class="zone-stat">Signal: Bon</span>
+                            </div>
+                        </div>
+                        <div class="equipment-status">
+                            <div class="status-dot status-online"></div>
+                            <span>Actif</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alertes -->
+            <div class="admin-card">
+                <h3><i class="fas fa-exclamation-triangle"></i> Alertes Système</h3>
+                <div class="alerts-list">
+                    <div class="alert-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>Bande passante élevée</strong>
+                            <div style="font-size: 0.9rem;">Zone Centre-Ville - 85% d'utilisation</div>
+                        </div>
+                    </div>
+                    <div class="alert-item">
+                        <i class="fas fa-tools"></i>
+                        <div>
+                            <strong>Maintenance programmée</strong>
+                            <div style="font-size: 0.9rem;">Routeur secondaire - 14h00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestion des utilisateurs -->
+            <div class="admin-card">
+                <h3><i class="fas fa-users-cog"></i> Gestion Utilisateurs</h3>
+                <div class="user-management">
+                    <div class="user-item">
+                        <div>
+                            <strong>Clients de base</strong>
+                            <div style="font-size: 0.9rem; color: var(--secondary-color);">1,089 utilisateurs</div>
+                        </div>
+                        <button class="btn btn-primary" style="padding: 0.5rem 1rem;">Gérer</button>
+                    </div>
+                    <div class="user-item">
+                        <div>
+                            <strong>Collaborateurs</strong>
+                            <div style="font-size: 0.9rem; color: var(--secondary-color);">23 membres</div>
+                        </div>
+                        <button class="btn btn-primary" style="padding: 0.5rem 1rem;">Gérer</button>
+                    </div>
+                    <div class="user-item">
+                        <div>
+                            <strong>Équipe Mireb</strong>
+                            <div style="font-size: 0.9rem; color: var(--secondary-color);">5 administrateurs</div>
+                        </div>
+                        <button class="btn btn-primary" style="padding: 0.5rem 1rem;">Gérer</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Abonnements -->
+            <div class="admin-card">
+                <h3><i class="fas fa-calendar-check"></i> Abonnements</h3>
+                <div class="subscriptions">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span>Forfaits Basiques actifs:</span>
+                        <span style="font-weight: bold; color: var(--primary-color);">234</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span>Forfaits Premium actifs:</span>
+                        <span style="font-weight: bold; color: var(--primary-color);">156</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span>Forfaits Journaliers actifs:</span>
+                        <span style="font-weight: bold; color: var(--primary-color);">78</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span>Revenus mensuels:</span>
+                        <span style="font-weight: bold; color: var(--success-color);">456,789 FC</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mise à jour automatique des données
+        function updateDashboard() {
+            // Simulation de mise à jour des métriques
+            const metrics = document.querySelectorAll('.metric-value');
+            metrics.forEach(metric => {
+                const currentValue = parseInt(metric.textContent.replace(/[^0-9]/g, ''));
+                const variation = Math.floor(Math.random() * 10) - 5;
+                const newValue = Math.max(0, currentValue + variation);
+                
+                if (metric.textContent.includes('FC')) {
+                    metric.textContent = newValue.toLocaleString() + ' FC';
+                } else {
+                    metric.textContent = newValue.toLocaleString();
+                }
+            });
+        }
+
+        // Mise à jour toutes les 10 secondes
+        setInterval(updateDashboard, 10000);
+
+        // Simulation de notifications en temps réel
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#28a745' : type === 'warning' ? '#ffc107' : '#007bff'};
+                color: white;
+                padding: 1rem;
+                border-radius: 10px;
+                z-index: 1000;
+                max-width: 300px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Simulation d'événements
+        setTimeout(() => {
+            showNotification('Nouvelle connexion détectée', 'success');
+        }, 3000);
+
+        setTimeout(() => {
+            showNotification('Bande passante élevée sur Zone Centre-Ville', 'warning');
+        }, 8000);
+    </script>
+</body>
+</html>

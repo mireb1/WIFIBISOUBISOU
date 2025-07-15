@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiFi Bisou Bisou - Vente de Tickets WiFi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <script src="config.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-wifi"></i>
+                <span>WiFi Bisou Bisou</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Accueil</a></li>
+                <li><a href="#dashboard">Tableau de bord</a></li>
+                <li><a href="#wifi-zones">Zones WiFi</a></li>
+                <li><a href="#support">Support</a></li>
+                <li><button class="btn btn-primary btn-sm" onclick="validateVoucher()">
+                    <i class="fas fa-check-circle"></i> Valider Voucher
+                </button></li>
+                <li><button class="login-btn btn btn-secondary btn-sm" onclick="showUserLoginModal()">
+                    <i class="fas fa-user"></i> Connexion
+                </button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Section d'accueil -->
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>🇨🇩 Accès WiFi Instantané - RDC</h1>
+                <p>Achetez vos tickets WiFi et obtenez vos vouchers immédiatement</p>
+                <div class="cta-buttons">
+                    <button class="btn btn-primary" onclick="showTicketSelection()">
+                        <i class="fas fa-ticket-alt"></i> Acheter un Ticket
+                    </button>
+                    <button class="btn btn-secondary" onclick="showDashboard()">
+                        <i class="fas fa-tachometer-alt"></i> Tableau de Bord
+                    </button>
+                    <button class="btn btn-success" onclick="validateVoucher()">
+                        <i class="fas fa-check-circle"></i> Valider Voucher
+                    </button>
+                    <button class="btn btn-warning" onclick="showDetailedStats()">
+                        <i class="fas fa-chart-bar"></i> Statistiques
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section d'achat de tickets -->
+        <section id="ticket-selection" class="section hidden">
+            <div class="container">
+                <h2>Sélectionnez votre forfait WiFi</h2>
+                <div class="ticket-grid">
+                    <div class="ticket-card">
+                        <h3>Forfait Basique</h3>
+                        <div class="price">500 FC</div>
+                        <ul class="features">
+                            <li><i class="fas fa-check"></i> 1 heure de connexion</li>
+                            <li><i class="fas fa-check"></i> Vitesse standard</li>
+                            <li><i class="fas fa-check"></i> Support de base</li>
+                        </ul>
+                        <button class="btn btn-primary" onclick="buyTicket('basic', 500)">Acheter</button>
+                    </div>
+                    <div class="ticket-card featured">
+                        <h3>Forfait Premium</h3>
+                        <div class="price">1500 FC</div>
+                        <ul class="features">
+                            <li><i class="fas fa-check"></i> 6 heures de connexion</li>
+                            <li><i class="fas fa-check"></i> Vitesse élevée</li>
+                            <li><i class="fas fa-check"></i> Support prioritaire</li>
+                        </ul>
+                        <button class="btn btn-primary" onclick="buyTicket('premium', 1500)">Acheter</button>
+                    </div>
+                    <div class="ticket-card">
+                        <h3>Forfait Journalier</h3>
+                        <div class="price">3000 FC</div>
+                        <ul class="features">
+                            <li><i class="fas fa-check"></i> 24 heures de connexion</li>
+                            <li><i class="fas fa-check"></i> Vitesse maximale</li>
+                            <li><i class="fas fa-check"></i> Support 24/7</li>
+                        </ul>
+                        <button class="btn btn-primary" onclick="buyTicket('daily', 3000)">Acheter</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tableau de bord -->
+        <section id="dashboard" class="section hidden">
+            <div class="container">
+                <h2>Tableau de Bord</h2>
+                <div class="dashboard-grid">
+                    <!-- Vue d'ensemble -->
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-chart-line"></i> Vue d'ensemble</h3>
+                        <div class="stats">
+                            <div class="stat-item">
+                                <span class="stat-number">245</span>
+                                <span class="stat-label">Connexions aujourd'hui</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">1,234</span>
+                                <span class="stat-label">Total utilisateurs</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Connexions Live -->
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-users"></i> Connexions Live</h3>
+                        <div class="live-connections">
+                            <div class="connection-item">
+                                <span class="user-info">User_001</span>
+                                <span class="connection-status active">Actif</span>
+                            </div>
+                            <div class="connection-item">
+                                <span class="user-info">User_002</span>
+                                <span class="connection-status active">Actif</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Surveillance temps réel -->
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-monitor-heart-rate"></i> Surveillance</h3>
+                        <div class="monitoring">
+                            <div class="metric">
+                                <span>Bande passante:</span>
+                                <span class="value">85%</span>
+                            </div>
+                            <div class="metric">
+                                <span>Latence:</span>
+                                <span class="value">12ms</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Menu de navigation du tableau de bord -->
+                <div class="dashboard-nav">
+                    <button class="nav-btn active" onclick="showDashboardSection('overview')">
+                        <i class="fas fa-tachometer-alt"></i> Vue d'ensemble
+                    </button>
+                    <button class="nav-btn" onclick="showDashboardSection('routers')">
+                        <i class="fas fa-router"></i> Routeurs
+                    </button>
+                    <button class="nav-btn" onclick="showDashboardSection('equipment')">
+                        <i class="fas fa-server"></i> Équipements
+                    </button>
+                    <button class="nav-btn" onclick="showDashboardSection('subscriptions')">
+                        <i class="fas fa-calendar-check"></i> Abonnements
+                    </button>
+                    <button class="nav-btn" onclick="showDashboardSection('users')">
+                        <i class="fas fa-users"></i> Utilisateurs
+                    </button>
+                    <button class="nav-btn" onclick="showDashboardSection('transactions')">
+                        <i class="fas fa-money-bill-wave"></i> Transactions
+                    </button>
+                    <button class="nav-btn" onclick="showDashboardSection('wifi-zones')">
+                        <i class="fas fa-map-marker-alt"></i> Zones WiFi
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Zones WiFi -->
+        <section id="wifi-zones" class="section hidden">
+            <div class="container">
+                <h2>Zones WiFi Disponibles</h2>
+                <div class="zones-grid">
+                    <div class="zone-card">
+                        <h3>Zone Centre-Ville</h3>
+                        <div class="zone-info">
+                            <p><i class="fas fa-map-marker-alt"></i> Avenue Kasa-Vubu, Kinshasa</p>
+                            <p><i class="fas fa-signal"></i> Signal: Excellent</p>
+                            <p><i class="fas fa-users"></i> Utilisateurs: 45/100</p>
+                        </div>
+                        <button class="btn btn-primary">Se connecter</button>
+                    </div>
+                    <div class="zone-card">
+                        <h3>Zone Université</h3>
+                        <div class="zone-info">
+                            <p><i class="fas fa-map-marker-alt"></i> Campus UNIKIN</p>
+                            <p><i class="fas fa-signal"></i> Signal: Bon</p>
+                            <p><i class="fas fa-users"></i> Utilisateurs: 78/150</p>
+                        </div>
+                        <button class="btn btn-primary">Se connecter</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Support -->
+        <section id="support" class="section hidden">
+            <div class="container">
+                <h2>Support & Assistance</h2>
+                <div class="support-grid">
+                    <div class="support-card">
+                        <h3><i class="fas fa-headset"></i> Assistance Clients</h3>
+                        <p>Notre équipe est disponible 24/7 pour vous aider</p>
+                        <button class="btn btn-primary">Contacter le Support</button>
+                    </div>
+                    <div class="support-card">
+                        <h3><i class="fas fa-question-circle"></i> FAQ</h3>
+                        <p>Trouvez des réponses aux questions fréquentes</p>
+                        <button class="btn btn-secondary">Voir la FAQ</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modal de paiement -->
+        <div id="payment-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h3>Finaliser l'achat</h3>
+                <div id="payment-details">
+                    <p>Forfait sélectionné: <span id="selected-plan"></span></p>
+                    <p>Prix: <span id="selected-price"></span> FC</p>
+                    <button class="btn btn-primary" onclick="redirectToPayment()">
+                        <i class="fas fa-credit-card"></i> Payer avec Flexpaie
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de voucher -->
+        <div id="voucher-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h3>Votre Voucher WiFi</h3>
+                <div class="voucher-display">
+                    <div class="voucher-code">
+                        <h4>Code de connexion:</h4>
+                        <div class="code-display" id="voucher-code">WIFI-2025-ABCD</div>
+                    </div>
+                    <div class="voucher-instructions">
+                        <h4>Instructions:</h4>
+                        <ol>
+                            <li>Connectez-vous au réseau "WiFi-Bisou-Bisou"</li>
+                            <li>Entrez ce code dans la page de connexion</li>
+                            <li>Profitez de votre connexion!</li>
+                        </ol>
+                    </div>
+                    <button class="btn btn-secondary" onclick="printVoucher()">
+                        <i class="fas fa-print"></i> Imprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 WiFi Bisou Bisou - Adaptation RDC. Tous droits réservés.</p>
+            <div class="footer-links">
+                <a href="#privacy">Confidentialité</a>
+                <a href="#terms">Conditions</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="demo.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
