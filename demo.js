@@ -401,6 +401,12 @@ window.getDemoStats = () => demoManager.getDemoStats();
 
 // Ajouter un panneau de contrôle de démonstration
 function createDemoPanel() {
+    // Supprimer le panneau existant s'il y en a un
+    const existingPanel = document.getElementById('demo-panel');
+    if (existingPanel) {
+        existingPanel.remove();
+    }
+    
     const panel = document.createElement('div');
     panel.id = 'demo-panel';
     panel.style.cssText = `
@@ -414,24 +420,66 @@ function createDemoPanel() {
         box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         z-index: 10000;
         min-width: 250px;
+        opacity: 0.9;
+        transition: all 0.3s ease;
     `;
     
     panel.innerHTML = `
-        <h4 style="margin: 0 0 10px 0; color: #007bff;">🎭 Panneau de Démonstration</h4>
-        <button onclick="initDemo()" class="btn btn-primary btn-sm" style="margin: 2px;">Charger Démo</button>
-        <button onclick="generateRandomData()" class="btn btn-success btn-sm" style="margin: 2px;">Données Aléatoires</button>
-        <button onclick="restoreData()" class="btn btn-warning btn-sm" style="margin: 2px;">Restaurer</button>
-        <button onclick="resetAllData()" class="btn btn-danger btn-sm" style="margin: 2px;">Réinitialiser</button>
-        <button onclick="simulateActivity()" class="btn btn-info btn-sm" style="margin: 2px;">Simuler Activité</button>
-        <button onclick="document.getElementById('demo-panel').remove()" class="btn btn-secondary btn-sm" style="margin: 2px;">Fermer</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h4 style="margin: 0; color: #007bff;">🎭 Panneau de Démonstration</h4>
+            <button onclick="closeDemoPanel()" style="background: none; border: none; font-size: 18px; cursor: pointer; color: #999;" title="Fermer définitivement">&times;</button>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+            <button onclick="initDemo()" class="btn btn-primary btn-sm" style="margin: 2px;">Charger Démo</button>
+            <button onclick="generateRandomData()" class="btn btn-success btn-sm" style="margin: 2px;">Données Aléatoires</button>
+            <button onclick="restoreData()" class="btn btn-warning btn-sm" style="margin: 2px;">Restaurer</button>
+            <button onclick="resetAllData()" class="btn btn-danger btn-sm" style="margin: 2px;">Réinitialiser</button>
+            <button onclick="simulateActivity()" class="btn btn-info btn-sm" style="margin: 2px;">Simuler Activité</button>
+        </div>
     `;
     
     document.body.appendChild(panel);
 }
 
-// Créer le panneau de démonstration automatiquement
+// Fonction pour fermer définitivement le panneau
+window.closeDemoPanel = function() {
+    const panel = document.getElementById('demo-panel');
+    if (panel) {
+        panel.remove();
+    }
+    localStorage.setItem('showDemoPanel', 'false');
+};
+
+// Fonction pour activer/désactiver le panneau de démonstration
+window.toggleDemoPanel = function() {
+    const currentState = localStorage.getItem('showDemoPanel') === 'true';
+    localStorage.setItem('showDemoPanel', !currentState);
+    
+    if (!currentState) {
+        createDemoPanel();
+    } else {
+        const panel = document.getElementById('demo-panel');
+        if (panel) panel.remove();
+    }
+};
+
+// Créer le panneau de démonstration seulement en mode développement
 document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(createDemoPanel, 2000);
+    // Vérifier si on est en mode développement
+    const isDevelopment = window.location.hostname === 'localhost' || 
+                         window.location.hostname === '127.0.0.1' || 
+                         window.location.hostname.includes('localhost') ||
+                         window.location.search.includes('demo=true');
+    
+    // Vérifier si l'utilisateur a explicitement désactivé le panneau
+    const isPanelDisabled = localStorage.getItem('showDemoPanel') === 'false';
+    
+    // Afficher le panneau seulement en mode développement ET si pas désactivé
+    if (isDevelopment && !isPanelDisabled) {
+        setTimeout(createDemoPanel, 2000);
+    }
 });
 
-console.log('🎭 Demo Manager chargé! Utilisez le panneau de démonstration pour tester les fonctionnalités.');
+console.log('🎭 Demo Manager chargé!');
+console.log('💡 Panneau de démonstration désactivé en production');
+console.log('🔧 Pour l\'activer en développement: toggleDemoPanel() ou ?demo=true');

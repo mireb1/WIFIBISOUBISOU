@@ -248,7 +248,9 @@ class NotificationManager {
             <button class="notification-close" onclick="this.parentElement.remove()">×</button>
         `;
         
-        document.body.appendChild(notificationElement);
+        // Utiliser le conteneur dédié plutôt que document.body
+        const container = document.getElementById('notifications-container') || document.body;
+        container.appendChild(notificationElement);
         
         // Auto-supprimer après 5 secondes
         setTimeout(() => {
@@ -445,7 +447,9 @@ function saveVoucher(code, plan, price) {
 function printVoucher() {
     const voucherCode = document.getElementById('voucher-code').textContent;
     const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
+    
+    // Créer le contenu HTML pour l'impression
+    const htmlContent = `
         <html>
             <head>
                 <title>Voucher WiFi - ${voucherCode}</title>
@@ -476,7 +480,12 @@ function printVoucher() {
                 </div>
             </body>
         </html>
-    `);
+    `;
+    
+    // Utiliser une méthode plus sûre que document.write
+    printWindow.document.open();
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
     printWindow.print();
     printWindow.close();
 }
@@ -716,45 +725,6 @@ function loadFromLocalStorage(key) {
     }
 }
 
-// Initialisation des données de démonstration
-function initializeDemoData() {
-    // Zones WiFi de démonstration
-    const demoZones = [
-        {
-            id: 1,
-            name: 'Zone Centre-Ville',
-            location: 'Avenue Kasa-Vubu, Kinshasa',
-            signal: 'Excellent',
-            users: 45,
-            maxUsers: 100,
-            status: 'active'
-        },
-        {
-            id: 2,
-            name: 'Zone Université',
-            location: 'Campus UNIKIN',
-            signal: 'Bon',
-            users: 78,
-            maxUsers: 150,
-            status: 'active'
-        },
-        {
-            id: 3,
-            name: 'Zone Marché Central',
-            location: 'Marché Central, Kinshasa',
-            signal: 'Moyen',
-            users: 32,
-            maxUsers: 80,
-            status: 'maintenance'
-        }
-    ];
-    
-    saveToLocalStorage('wifiZones', demoZones);
-}
-
-// Lancer l'initialisation
-initializeDemoData();
-
 // Fonctions de gestion des utilisateurs
 function showUserLoginModal() {
     const modal = document.createElement('div');
@@ -932,7 +902,9 @@ function validateVoucher() {
         </div>
     `;
     
-    document.body.appendChild(modal);
+    // Utiliser le conteneur dédié plutôt que document.body
+    const container = document.getElementById('dynamic-modals-container') || document.body;
+    container.appendChild(modal);
     
     document.getElementById('voucher-validation-form').addEventListener('submit', function(e) {
         e.preventDefault();

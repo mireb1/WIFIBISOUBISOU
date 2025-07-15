@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WiFi Bisou Bisou - Vente de Tickets WiFi</title>
-    <meta name="description" content="Système de vente de tickets WiFi avec génération de vouchers - Adaptation RDC">
+    <meta name="description" content="Système de vente de tickets WiFi avec géné    <script src="environment-config.js"></script>
+    <script src="url-config.js"></script>
+    <script src="production-config.js"></script>
+    <script src="config-validator.js"></script>
+    <script src="config.js"></script>
+    <script src="production-vouchers.js"></script>
+    <script src="script.js"></script>
+    <script src="demo.js"></script>n de vouchers - Adaptation RDC">
     <meta name="keywords" content="wifi, vouchers, rdc, congo, tickets, flexpaie">
     <meta name="theme-color" content="#007bff">
     <link rel="manifest" href="manifest.json">
@@ -268,12 +275,22 @@
                 <a href="#privacy">Confidentialité</a>
                 <a href="#terms">Conditions</a>
                 <a href="#contact">Contact</a>
+                <a href="#" onclick="event.preventDefault(); window.toggleDemoPanel && window.toggleDemoPanel();" title="Activer/Désactiver le panneau de démonstration" style="opacity: 0.3;">🎭</a>
             </div>
         </div>
     </footer>
 
+    <!-- Conteneur pour les modals dynamiques -->
+    <div id="dynamic-modals-container"></div>
+    
+    <!-- Conteneur pour les notifications -->
+    <div id="notifications-container"></div>
+
+    <script src="environment-config.js"></script>
+    <script src="url-config.js"></script>
     <script src="config.js"></script>
-    <script src="demo.js"></script>
+    <script src="production-vouchers.js"></script>
     <script src="script.js"></script>
+    <script src="demo.js"></script>
 </body>
 </html>

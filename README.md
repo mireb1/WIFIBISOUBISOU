@@ -267,3 +267,16 @@ const WIFI_NETWORK_NAME = 'WiFi-Bisou-Bisou';
 - ✅ Mode démonstration
 - ✅ Centre de support complet
 - ✅ Configuration système avancée
+## 🔗 Liens d'accès
+
+- **Production**: https://mireb1.github.io/WIFIBISOUBISOU/
+- **Local**: http://localhost:8000
+- **Repository**: https://github.com/mireb1/WIFIBISOUBISOU
+
+### 🧪 Tests
+
+Pour tester l'application, ouvrez la console développeur et utilisez :
+```javascript
+openApp('production')  // Ouvrir la version production
+openApp('local')       // Ouvrir la version locale
+```
