@@ -299,6 +299,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Vérifier les vouchers expirés
     checkExpiredVouchers();
     
+    // S'assurer que tous les modaux sont fermés au démarrage
+    preventAutoModals();
+    
     // Notification de bienvenue
     if (userManager.currentUser) {
         notificationManager.addNotification('info', 'Bienvenue!', 
@@ -421,7 +424,7 @@ function generateVoucher() {
     
     // Mettre à jour l'interface
     document.getElementById('voucher-code').textContent = voucher.code;
-    document.getElementById('voucher-modal').classList.remove('hidden');
+    openModal('voucher-modal');
     
     // Mettre à jour les statistiques utilisateur
     if (userId) {
@@ -497,9 +500,38 @@ function closeModal() {
     });
 }
 
+// Fonction pour ouvrir un modal spécifique
+function openModal(modalId) {
+    // Fermer tous les modaux d'abord
+    closeModal();
+    
+    // Ouvrir le modal spécifique
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+}
+
+// Fonction pour empêcher l'ouverture automatique de modaux
+function preventAutoModals() {
+    // S'assurer que tous les modaux sont fermés
+    closeModal();
+    
+    // Nettoyer le localStorage des éventuels flags de modal
+    localStorage.removeItem('autoOpenModal');
+    localStorage.removeItem('showVoucherModal');
+}
+
 // Fermer les modales en cliquant à l'extérieur
 document.addEventListener('click', function(event) {
     if (event.target.classList.contains('modal')) {
+        closeModal();
+    }
+});
+
+// Fermer les modales avec la touche Échap
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape' || event.keyCode === 27) {
         closeModal();
     }
 });

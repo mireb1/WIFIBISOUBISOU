@@ -4,20 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WiFi Bisou Bisou - Vente de Tickets WiFi</title>
-    <meta name="description" content="Système de vente de tickets WiFi avec géné    <script src="environment-config.js"></script>
+    <meta name="description" content="Système de vente de tickets WiFi avec génération de vouchers - Adaptation RDC">
+    <meta name="keywords" content="wifi, vouchers, rdc, congo, tickets, flexpaie">
+    <meta name="theme-color" content="#007bff">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    
+    <!-- Scripts de configuration -->
+    <script src="modal-blocker.js"></script>
+    <script src="environment-config.js"></script>
     <script src="url-config.js"></script>
     <script src="production-config.js"></script>
     <script src="config-validator.js"></script>
     <script src="config.js"></script>
     <script src="production-vouchers.js"></script>
     <script src="script.js"></script>
-    <script src="demo.js"></script>n de vouchers - Adaptation RDC">
-    <meta name="keywords" content="wifi, vouchers, rdc, congo, tickets, flexpaie">
-    <meta name="theme-color" content="#007bff">
-    <link rel="manifest" href="manifest.json">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
-    <script src="config.js"></script>
+    <script src="demo.js"></script>
 </head>
 <body>
     <nav class="navbar">
@@ -250,7 +253,7 @@
                 <div class="voucher-display">
                     <div class="voucher-code">
                         <h4>Code de connexion:</h4>
-                        <div class="code-display" id="voucher-code">WIFI-2025-ABCD</div>
+                        <div class="code-display" id="voucher-code"><!-- Code sera généré automatiquement --></div>
                     </div>
                     <div class="voucher-instructions">
                         <h4>Instructions:</h4>
