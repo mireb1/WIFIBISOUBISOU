@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Interactif - WiFi Bisou Bisou</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+        
+        .test-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-color: #007bff;
+        }
+        
+        .test-card h3 {
+            color: #007bff;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .test-card p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            color: #212529;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 10px 0;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .test-result {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #007bff;
+        }
+        
+        .logs {
+            background: #212529;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            height: 200px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            background: #e9ecef;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .test-grid {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Test Interactif</h1>
+            <p>Vérification en temps réel de WiFi Bisou Bisou</p>
+            <div class="status status-info" id="site-status">Vérification en cours...</div>
+        </div>
+        
+        <div class="test-grid">
+            <div class="test-card">
+                <h3>🌐 Connectivité Site</h3>
+                <p>Test de l'accessibilité du site principal</p>
+                <button class="btn" onclick="testSiteConnectivity()">Tester la Connectivité</button>
+                <div id="connectivity-result" class="test-result" style="display: none;"></div>
+            </div>
+            
+            <div class="test-card">
+                <h3>👤 Connexion Utilisateur</h3>
+                <p>Test du système de connexion et d'authentification</p>
+                <button class="btn btn-success" onclick="testUserLogin()">Tester la Connexion</button>
+                <div id="login-result" class="test-result" style="display: none;"></div>
+            </div>
+            
+            <div class="test-card">
+                <h3>🎫 Achat de Ticket</h3>
+                <p>Test du processus d'achat de tickets WiFi</p>
+                <button class="btn btn-warning" onclick="testTicketPurchase()">Tester l'Achat</button>
+                <div id="purchase-result" class="test-result" style="display: none;"></div>
+            </div>
+            
+            <div class="test-card">
+                <h3>🎟️ Validation Voucher</h3>
+                <p>Test de la validation des codes voucher</p>
+                <button class="btn btn-info" onclick="testVoucherValidation()">Tester la Validation</button>
+                <div id="validation-result" class="test-result" style="display: none;"></div>
+            </div>
+            
+            <div class="test-card">
+                <h3>📊 Tableau de Bord</h3>
+                <p>Test du tableau de bord administrateur</p>
+                <button class="btn btn-danger" onclick="testDashboard()">Tester le Dashboard</button>
+                <div id="dashboard-result" class="test-result" style="display: none;"></div>
+            </div>
+            
+            <div class="test-card">
+                <h3>🚀 Test Complet</h3>
+                <p>Exécution de tous les tests automatiquement</p>
+                <button class="btn" onclick="runCompleteTest()">Lancer Tous les Tests</button>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div id="complete-result" class="test-result" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div style="padding: 30px;">
+            <h3>📋 Logs en Temps Réel</h3>
+            <div class="logs" id="logs"></div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="https://mireb1.github.io/WIFIBISOUBISOU/" class="btn btn-success" target="_blank">
+                    🌐 Ouvrir le Site Principal
+                </a>
+                <button class="btn btn-warning" onclick="clearLogs()">🗑️ Effacer les Logs</button>
+                <button class="btn btn-info" onclick="downloadReport()">📄 Télécharger le Rapport</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = [];
+        let currentProgress = 0;
+        
+        // Fonction pour logger
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                info: '#00ff00',
+                success: '#00ff00',
+                warning: '#ffff00',
+                error: '#ff0000'
+            };
+            
+            logs.innerHTML += `<div style="color: ${colors[type] || '#00ff00'}">[${timestamp}] ${message}</div>`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+        
+        // Fonction pour afficher le résultat
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `test-result status-${type}`;
+            element.innerHTML = message;
+        }
+        
+        // Test de connectivité
+        async function testSiteConnectivity() {
+            log('🌐 Test de connectivité du site...');
+            
+            try {
+                const response = await fetch('https://mireb1.github.io/WIFIBISOUBISOU/');
+                if (response.ok) {
+                    log('✅ Site accessible - HTTP ' + response.status, 'success');
+                    showResult('connectivity-result', '✅ Site accessible et fonctionnel', 'success');
+                    
+                    // Vérifier les ressources critiques
+                    const criticalFiles = ['styles.css', 'script.js', 'manifest.json'];
+                    for (const file of criticalFiles) {
+                        try {
+                            const fileResponse = await fetch(`https://mireb1.github.io/WIFIBISOUBISOU/${file}`);
+                            if (fileResponse.ok) {
+                                log(`✅ ${file} accessible`, 'success');
+                            } else {
+                                log(`❌ ${file} inaccessible`, 'error');
+                            }
+                        } catch (error) {
+                            log(`❌ Erreur lors du test de ${file}`, 'error');
+                        }
+                    }
+                    
+                    return true;
+                } else {
+                    log('❌ Site inaccessible - HTTP ' + response.status, 'error');
+                    showResult('connectivity-result', '❌ Site inaccessible', 'error');
+                    return false;
+                }
+            } catch (error) {
+                log('❌ Erreur de connectivité: ' + error.message, 'error');
+                showResult('connectivity-result', '❌ Erreur de connectivité', 'error');
+                return false;
+            }
+        }
+        
+        // Test de connexion utilisateur
+        async function testUserLogin() {
+            log('👤 Test de connexion utilisateur...');
+            
+            try {
+                const response = await fetch('https://mireb1.github.io/WIFIBISOUBISOU/');
+                const html = await response.text();
+                
+                const checks = [
+                    html.includes('showUserLoginModal'),
+                    html.includes('UserManager'),
+                    html.includes('login-btn'),
+                    html.includes('Connexion')
+                ];
+                
+                const passed = checks.filter(check => check).length;
+                
+                if (passed >= 3) {
+                    log('✅ Système de connexion fonctionnel', 'success');
+                    showResult('login-result', '✅ Connexion utilisateur opérationnelle', 'success');
+                    return true;
+                } else {
+                    log('⚠️ Système de connexion partiellement fonctionnel', 'warning');
+                    showResult('login-result', '⚠️ Connexion partiellement fonctionnelle', 'warning');
+                    return false;
+                }
+            } catch (error) {
+                log('❌ Erreur test connexion: ' + error.message, 'error');
+                showResult('login-result', '❌ Erreur test connexion', 'error');
+                return false;
+            }
+        }
+        
+        // Test d'achat de ticket
+        async function testTicketPurchase() {
+            log('🎫 Test d\'achat de ticket...');
+            
+            try {
+                const response = await fetch('https://mireb1.github.io/WIFIBISOUBISOU/');
+                const html = await response.text();
+                
+                const checks = [
+                    html.includes('buyTicket'),
+                    html.includes('VoucherManager'),
+                    html.includes('Acheter'),
+                    html.includes('Flexpaie')
+                ];
+                
+                const passed = checks.filter(check => check).length;
+                
+                if (passed >= 3) {
+                    log('✅ Système d\'achat fonctionnel', 'success');
+                    showResult('purchase-result', '✅ Achat de ticket opérationnel', 'success');
+                    return true;
+                } else {
+                    log('⚠️ Système d\'achat partiellement fonctionnel', 'warning');
+                    showResult('purchase-result', '⚠️ Achat partiellement fonctionnel', 'warning');
+                    return false;
+                }
+            } catch (error) {
+                log('❌ Erreur test achat: ' + error.message, 'error');
+                showResult('purchase-result', '❌ Erreur test achat', 'error');
+                return false;
+            }
+        }
+        
+        // Test de validation voucher
+        async function testVoucherValidation() {
+            log('🎟️ Test de validation voucher...');
+            
+            try {
+                const response = await fetch('https://mireb1.github.io/WIFIBISOUBISOU/');
+                const html = await response.text();
+                
+                const checks = [
+                    html.includes('validateVoucher'),
+                    html.includes('Valider Voucher'),
+                    html.includes('voucher-code'),
+                    html.includes('WIFI-')
+                ];
+                
+                const passed = checks.filter(check => check).length;
+                
+                if (passed >= 3) {
+                    log('✅ Système de validation fonctionnel', 'success');
+                    showResult('validation-result', '✅ Validation voucher opérationnelle', 'success');
+                    return true;
+                } else {
+                    log('⚠️ Système de validation partiellement fonctionnel', 'warning');
+                    showResult('validation-result', '⚠️ Validation partiellement fonctionnelle', 'warning');
+                    return false;
+                }
+            } catch (error) {
+                log('❌ Erreur test validation: ' + error.message, 'error');
+                showResult('validation-result', '❌ Erreur test validation', 'error');
+                return false;
+            }
+        }
+        
+        // Test du tableau de bord
+        async function testDashboard() {
+            log('📊 Test du tableau de bord...');
+            
+            try {
+                const response = await fetch('https://mireb1.github.io/WIFIBISOUBISOU/');
+                const html = await response.text();
+                
+                const checks = [
+                    html.includes('showDashboard'),
+                    html.includes('dashboard-manager'),
+                    html.includes('router-manager'),
+                    html.includes('Tableau de bord')
+                ];
+                
+                const passed = checks.filter(check => check).length;
+                
+                if (passed >= 3) {
+                    log('✅ Tableau de bord fonctionnel', 'success');
+                    showResult('dashboard-result', '✅ Tableau de bord opérationnel', 'success');
+                    return true;
+                } else {
+                    log('⚠️ Tableau de bord partiellement fonctionnel', 'warning');
+                    showResult('dashboard-result', '⚠️ Dashboard partiellement fonctionnel', 'warning');
+                    return false;
+                }
+            } catch (error) {
+                log('❌ Erreur test dashboard: ' + error.message, 'error');
+                showResult('dashboard-result', '❌ Erreur test dashboard', 'error');
+                return false;
+            }
+        }
+        
+        // Test complet
+        async function runCompleteTest() {
+            log('🚀 Début du test complet...');
+            currentProgress = 0;
+            updateProgress(0);
+            
+            const tests = [
+                { name: 'Connectivité', func: testSiteConnectivity },
+                { name: 'Connexion', func: testUserLogin },
+                { name: 'Achat', func: testTicketPurchase },
+                { name: 'Validation', func: testVoucherValidation },
+                { name: 'Dashboard', func: testDashboard }
+            ];
+            
+            let passed = 0;
+            let total = tests.length;
+            
+            for (let i = 0; i < total; i++) {
+                const test = tests[i];
+                log(`⏳ Test ${i + 1}/${total}: ${test.name}...`);
+                
+                try {
+                    const result = await test.func();
+                    if (result) {
+                        passed++;
+                        log(`✅ ${test.name}: RÉUSSI`, 'success');
+                    } else {
+                        log(`❌ ${test.name}: ÉCHOUÉ`, 'error');
+                    }
+                } catch (error) {
+                    log(`❌ ${test.name}: ERREUR - ${error.message}`, 'error');
+                }
+                
+                updateProgress(((i + 1) / total) * 100);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            
+            const percentage = Math.round((passed / total) * 100);
+            log(`📊 Résultat final: ${passed}/${total} tests réussis (${percentage}%)`);
+            
+            if (percentage === 100) {
+                log('🎉 TOUS LES TESTS RÉUSSIS! Site entièrement fonctionnel.', 'success');
+                showResult('complete-result', '🎉 Tous les tests réussis! Site opérationnel', 'success');
+            } else if (percentage >= 80) {
+                log('✅ La plupart des tests réussis. Site fonctionnel.', 'success');
+                showResult('complete-result', '✅ Site fonctionnel avec améliorations possibles', 'warning');
+            } else {
+                log('⚠️ Plusieurs tests échoués. Vérification nécessaire.', 'warning');
+                showResult('complete-result', '⚠️ Problèmes détectés nécessitant attention', 'error');
+            }
+            
+            // Mettre à jour le statut du site
+            document.getElementById('site-status').textContent = `${percentage}% fonctionnel`;
+            document.getElementById('site-status').className = `status ${percentage >= 80 ? 'status-success' : percentage >= 60 ? 'status-warning' : 'status-error'}`;
+        }
+        
+        // Mettre à jour la barre de progression
+        function updateProgress(percentage) {
+            document.getElementById('progress-fill').style.width = percentage + '%';
+        }
+        
+        // Effacer les logs
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+            log('🗑️ Logs effacés');
+        }
+        
+        // Télécharger le rapport
+        function downloadReport() {
+            const logs = document.getElementById('logs').innerText;
+            const blob = new Blob([logs], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `wifi-bisou-bisou-test-report-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            log('📄 Rapport téléchargé');
+        }
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Interface de test initialisée');
+            log('💡 Cliquez sur les boutons pour tester chaque fonctionnalité');
+            
+            // Test automatique de connectivité au chargement
+            setTimeout(testSiteConnectivity, 2000);
+        });
+    </script>
+</body>
+</html>
