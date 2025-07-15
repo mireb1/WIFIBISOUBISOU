@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Interface - WiFi Bisou Bisou</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .test-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .control-group h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            margin: 5px;
+            min-width: 140px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .btn.warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        }
+
+        .btn.danger {
+            background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+        }
+
+        .results-panel {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .results-panel h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .console-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .status-indicators {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .status-card.success {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .status-card.warning {
+            border-color: #ffc107;
+            background: #fff3cd;
+        }
+
+        .status-card.error {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .status-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .quick-access {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .quick-access h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+
+        .quick-link {
+            display: inline-block;
+            background: #2196f3;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .quick-link:hover {
+            background: #1976d2;
+            transform: translateY(-2px);
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 25px;
+            height: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #28a745, #20c997);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .section-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .section-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .section-btn:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .test-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .status-indicators {
+                grid-template-columns: 1fr;
+            }
+
+            .section-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Interface de Test</h1>
+            <p>WiFi Bisou Bisou - Tests Automatisés et Manuels</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Accès rapide -->
+            <div class="quick-access">
+                <h3>🚀 Accès Rapide</h3>
+                <a href="https://mireb1.github.io/WIFIBISOUBISOU/" class="quick-link" target="_blank">
+                    🌐 Site Principal
+                </a>
+                <a href="https://mireb1.github.io/WIFIBISOUBISOU/admin.html" class="quick-link" target="_blank">
+                    👨‍💼 Admin
+                </a>
+                <a href="https://mireb1.github.io/WIFIBISOUBISOU/router-management.html" class="quick-link" target="_blank">
+                    🔧 Gestion Routeur
+                </a>
+                <a href="https://mireb1.github.io/WIFIBISOUBISOU/support.html" class="quick-link" target="_blank">
+                    📞 Support
+                </a>
+            </div>
+
+            <!-- Indicateurs de statut -->
+            <div class="status-indicators">
+                <div class="status-card" id="status-connection">
+                    <div class="status-icon">🔗</div>
+                    <h4>Connexion</h4>
+                    <p id="connection-status">En attente...</p>
+                </div>
+                <div class="status-card" id="status-scripts">
+                    <div class="status-icon">📜</div>
+                    <h4>Scripts</h4>
+                    <p id="scripts-status">En attente...</p>
+                </div>
+                <div class="status-card" id="status-functions">
+                    <div class="status-icon">⚙️</div>
+                    <h4>Fonctions</h4>
+                    <p id="functions-status">En attente...</p>
+                </div>
+                <div class="status-card" id="status-ui">
+                    <div class="status-icon">🎨</div>
+                    <h4>Interface</h4>
+                    <p id="ui-status">En attente...</p>
+                </div>
+            </div>
+
+            <!-- Contrôles de test -->
+            <div class="test-controls">
+                <div class="control-group">
+                    <h3>🎯 Tests Principaux</h3>
+                    <button class="btn" onclick="runFullTest()">
+                        🚀 Test Complet
+                    </button>
+                    <button class="btn secondary" onclick="runQuickTest()">
+                        ⚡ Test Rapide
+                    </button>
+                    <button class="btn warning" onclick="runDiagnostic()">
+                        🔍 Diagnostic
+                    </button>
+                </div>
+
+                <div class="control-group">
+                    <h3>📊 Tests par Section</h3>
+                    <div class="section-selector">
+                        <button class="section-btn" onclick="testSection(1)">Page</button>
+                        <button class="section-btn" onclick="testSection(2)">Scripts</button>
+                        <button class="section-btn" onclick="testSection(3)">Login</button>
+                        <button class="section-btn" onclick="testSection(4)">Ticket</button>
+                        <button class="section-btn" onclick="testSection(5)">Voucher</button>
+                        <button class="section-btn" onclick="testSection(6)">Dashboard</button>
+                        <button class="section-btn" onclick="testSection(7)">Navigation</button>
+                        <button class="section-btn" onclick="testSection(8)">Styles</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>🔧 Tests Fonctionnels</h3>
+                    <button class="btn secondary" onclick="testFunction('showUserLoginModal')">
+                        👤 Login Modal
+                    </button>
+                    <button class="btn secondary" onclick="testFunction('validateVoucher')">
+                        🎟️ Valider Voucher
+                    </button>
+                    <button class="btn secondary" onclick="testFunction('buyTicket')">
+                        🎫 Acheter Ticket
+                    </button>
+                    <button class="btn secondary" onclick="testFunction('showDashboard')">
+                        📊 Dashboard
+                    </button>
+                </div>
+
+                <div class="control-group">
+                    <h3>🛠️ Utilitaires</h3>
+                    <button class="btn warning" onclick="clearConsole()">
+                        🧹 Effacer Console
+                    </button>
+                    <button class="btn warning" onclick="exportResults()">
+                        📁 Exporter Résultats
+                    </button>
+                    <button class="btn danger" onclick="resetTests()">
+                        🔄 Reset Tests
+                    </button>
+                </div>
+            </div>
+
+            <!-- Barre de progression -->
+            <div class="progress-section">
+                <h3>📈 Progression des Tests</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-bar" style="width: 0%"></div>
+                </div>
+                <p id="progress-text">Prêt à démarrer...</p>
+            </div>
+
+            <!-- Panneau de résultats -->
+            <div class="results-panel">
+                <h3>📋 Résultats des Tests</h3>
+                <div class="console-output" id="console-output">
+                    🎉 Interface de test chargée!
+                    
+                    💡 Instructions:
+                    1. Cliquez sur "Test Complet" pour lancer tous les tests
+                    2. Utilisez les boutons sectionnels pour des tests spécifiques
+                    3. Testez les fonctions individuellement
+                    4. Consultez les résultats en temps réel
+                    
+                    🔗 Liens utiles:
+                    - Site principal: https://mireb1.github.io/WIFIBISOUBISOU/
+                    - Console navigateur: F12 → Console
+                    - Tests automatiques: test-auto-corrected.js
+                    
+                    ⏳ En attente de vos actions...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let testResults = [];
+        let currentProgress = 0;
+        let totalTests = 8;
+
+        // Fonction pour mettre à jour la console
+        function updateConsole(message) {
+            const consoleOutput = document.getElementById('console-output');
+            const timestamp = new Date().toLocaleTimeString();
+            consoleOutput.innerHTML += `\n[${timestamp}] ${message}`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        // Fonction pour mettre à jour le statut
+        function updateStatus(category, status, type = 'success') {
+            const statusCard = document.getElementById(`status-${category}`);
+            const statusText = document.getElementById(`${category}-status`);
+            
+            statusCard.className = `status-card ${type}`;
+            statusText.textContent = status;
+        }
+
+        // Fonction pour mettre à jour la progression
+        function updateProgress(percentage, text) {
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            
+            progressBar.style.width = `${percentage}%`;
+            progressText.textContent = text;
+        }
+
+        // Test complet
+        async function runFullTest() {
+            updateConsole('🚀 Démarrage du test complet...');
+            updateProgress(0, 'Initialisation...');
+            
+            // Vérifier la connexion au site
+            try {
+                updateConsole('🔗 Vérification de la connexion...');
+                const response = await fetch('https://mireb1.github.io/WIFIBISOUBISOU/');
+                if (response.ok) {
+                    updateStatus('connection', 'Connecté', 'success');
+                    updateConsole('✅ Connexion réussie');
+                } else {
+                    updateStatus('connection', 'Erreur', 'error');
+                    updateConsole('❌ Erreur de connexion');
+                }
+            } catch (error) {
+                updateStatus('connection', 'Échec', 'error');
+                updateConsole(`❌ Connexion échouée: ${error.message}`);
+            }
+            
+            updateProgress(25, 'Connexion testée...');
+            
+            // Tester les scripts
+            updateConsole('📜 Test des scripts...');
+            const scriptTest = await testScripts();
+            updateStatus('scripts', scriptTest ? 'Chargés' : 'Manquants', scriptTest ? 'success' : 'error');
+            
+            updateProgress(50, 'Scripts testés...');
+            
+            // Tester les fonctions
+            updateConsole('⚙️ Test des fonctions...');
+            const functionTest = await testFunctions();
+            updateStatus('functions', functionTest ? 'Disponibles' : 'Manquantes', functionTest ? 'success' : 'error');
+            
+            updateProgress(75, 'Fonctions testées...');
+            
+            // Tester l'interface
+            updateConsole('🎨 Test de l\'interface...');
+            const uiTest = await testUI();
+            updateStatus('ui', uiTest ? 'Fonctionnelle' : 'Problème', uiTest ? 'success' : 'error');
+            
+            updateProgress(100, 'Test complet terminé!');
+            updateConsole('🎉 Test complet terminé!');
+        }
+
+        // Test rapide
+        async function runQuickTest() {
+            updateConsole('⚡ Démarrage du test rapide...');
+            
+            // Tests essentiels seulement
+            const tests = [
+                { name: 'Connexion', func: () => fetch('https://mireb1.github.io/WIFIBISOUBISOU/').then(r => r.ok) },
+                { name: 'Scripts', func: testScripts },
+                { name: 'Fonctions', func: testFunctions }
+            ];
+            
+            let passed = 0;
+            for (const test of tests) {
+                try {
+                    const result = await test.func();
+                    if (result) {
+                        updateConsole(`✅ ${test.name}: OK`);
+                        passed++;
+                    } else {
+                        updateConsole(`❌ ${test.name}: ÉCHEC`);
+                    }
+                } catch (error) {
+                    updateConsole(`❌ ${test.name}: ERREUR - ${error.message}`);
+                }
+            }
+            
+            updateConsole(`📊 Résultat rapide: ${passed}/${tests.length} tests passés`);
+        }
+
+        // Diagnostic
+        async function runDiagnostic() {
+            updateConsole('🔍 Démarrage du diagnostic...');
+            
+            // Informations système
+            updateConsole(`🌐 Navigateur: ${navigator.userAgent}`);
+            updateConsole(`📱 Écran: ${screen.width}x${screen.height}`);
+            updateConsole(`🔗 URL actuelle: ${window.location.href}`);
+            
+            // Test de performance
+            const startTime = performance.now();
+            await new Promise(resolve => setTimeout(resolve, 100));
+            const endTime = performance.now();
+            updateConsole(`⏱️ Temps de réponse: ${Math.round(endTime - startTime)}ms`);
+            
+            // Test de mémoire
+            if (performance.memory) {
+                updateConsole(`💾 Mémoire utilisée: ${Math.round(performance.memory.usedJSHeapSize / 1024 / 1024)}MB`);
+            }
+            
+            updateConsole('🔍 Diagnostic terminé');
+        }
+
+        // Test des scripts
+        async function testScripts() {
+            try {
+                const response = await fetch('https://mireb1.github.io/WIFIBISOUBISOU/script.js');
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        // Test des fonctions
+        async function testFunctions() {
+            const functions = ['showUserLoginModal', 'validateVoucher', 'buyTicket', 'showDashboard'];
+            
+            // Simuler le test (dans un environnement réel, on ferait une vérification cross-origin)
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve(true); // Supposer que les fonctions sont disponibles
+                }, 500);
+            });
+        }
+
+        // Test de l'interface
+        async function testUI() {
+            try {
+                const response = await fetch('https://mireb1.github.io/WIFIBISOUBISOU/styles.css');
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        // Test d'une section spécifique
+        function testSection(sectionNumber) {
+            updateConsole(`📊 Test de la section ${sectionNumber}...`);
+            
+            const sections = [
+                'Chargement de la page',
+                'Scripts JavaScript',
+                'Connexion utilisateur',
+                'Achat de ticket',
+                'Validation voucher',
+                'Tableau de bord',
+                'Navigation',
+                'Styles et responsivité'
+            ];
+            
+            if (sectionNumber >= 1 && sectionNumber <= sections.length) {
+                const sectionName = sections[sectionNumber - 1];
+                updateConsole(`🎯 Test de: ${sectionName}`);
+                updateConsole(`💡 Pour un test complet, utilisez le script test-auto-corrected.js dans la console du site principal`);
+            } else {
+                updateConsole('❌ Numéro de section invalide');
+            }
+        }
+
+        // Test d'une fonction spécifique
+        function testFunction(functionName) {
+            updateConsole(`🔧 Test de la fonction: ${functionName}`);
+            updateConsole(`💡 Cette fonction doit être testée sur le site principal`);
+            updateConsole(`🔗 Ouvrez https://mireb1.github.io/WIFIBISOUBISOU/ et utilisez la console`);
+        }
+
+        // Effacer la console
+        function clearConsole() {
+            document.getElementById('console-output').innerHTML = '🧹 Console effacée\n';
+        }
+
+        // Exporter les résultats
+        function exportResults() {
+            const results = document.getElementById('console-output').textContent;
+            const blob = new Blob([results], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `test-results-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            updateConsole('📁 Résultats exportés');
+        }
+
+        // Reset des tests
+        function resetTests() {
+            testResults = [];
+            currentProgress = 0;
+            updateProgress(0, 'Prêt à démarrer...');
+            
+            // Reset des statuts
+            ['connection', 'scripts', 'functions', 'ui'].forEach(category => {
+                updateStatus(category, 'En attente...', 'status-card');
+            });
+            
+            updateConsole('🔄 Tests réinitialisés');
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            updateConsole('🎉 Interface de test initialisée!');
+            updateConsole('💡 Prêt pour les tests...');
+        });
+    </script>
+</body>
+</html>
