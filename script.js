@@ -1042,3 +1042,83 @@ function generateActivityChart() {
         </div>
     `;
 }
+
+// Enregistrement du Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+                console.log('Service Worker enregistré avec succès:', registration.scope);
+                
+                // Écouter les mises à jour
+                registration.addEventListener('updatefound', function() {
+                    const newWorker = registration.installing;
+                    newWorker.addEventListener('statechange', function() {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // Nouvelle version disponible
+                            if (window.notificationManager) {
+                                window.notificationManager.addNotification('info', 'Mise à jour disponible', 
+                                    'Une nouvelle version est disponible. Rechargez la page pour l\'activer.');
+                            }
+                        }
+                    });
+                });
+            })
+            .catch(function(error) {
+                console.log('Erreur lors de l\'enregistrement du Service Worker:', error);
+            });
+    });
+}
+
+// Gestion de l'installation PWA
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    
+    // Afficher un bouton d'installation personnalisé
+    const installBtn = document.createElement('button');
+    installBtn.textContent = 'Installer l\'application';
+    installBtn.className = 'btn btn-primary install-btn';
+    installBtn.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 1000;
+        display: none;
+    `;
+    
+    installBtn.addEventListener('click', function() {
+        installBtn.style.display = 'none';
+        
+        deferredPrompt.prompt();
+        
+        deferredPrompt.userChoice.then(function(choiceResult) {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('PWA installée');
+                if (window.notificationManager) {
+                    window.notificationManager.addNotification('success', 'Installation réussie!', 
+                        'WiFi Bisou Bisou a été installé sur votre appareil.');
+                }
+            }
+            deferredPrompt = null;
+        });
+    });
+    
+    document.body.appendChild(installBtn);
+    
+    // Afficher le bouton après un délai
+    setTimeout(() => {
+        installBtn.style.display = 'block';
+    }, 5000);
+});
+
+// Détecter si l'app est lancée depuis l'écran d'accueil
+window.addEventListener('appinstalled', function(evt) {
+    console.log('PWA installée depuis l\'écran d\'accueil');
+    if (window.notificationManager) {
+        window.notificationManager.addNotification('success', 'Application installée!', 
+            'WiFi Bisou Bisou est maintenant disponible sur votre écran d\'accueil.');
+    }
+});

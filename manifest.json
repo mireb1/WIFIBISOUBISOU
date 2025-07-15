@@ -1,0 +1,63 @@
+{
+  "name": "WiFi Bisou Bisou - Système de Tickets WiFi",
+  "short_name": "WiFi Bisou Bisou",
+  "description": "Système de vente de tickets WiFi avec génération de vouchers - Adaptation RDC",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#007bff",
+  "theme_color": "#007bff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "fr",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMTYiIGZpbGw9IiMwMDdiZmYiLz4KPHBhdGggZD0iTTQ4IDk2QzQ4IDY5LjQ5IDY5LjQ5IDQ4IDk2IDQ4UzE0NCA2OS40OSAxNDQgOTZTMTIyLjUxIDE0NCA5NiAxNDRTNDggMTIyLjUxIDQ4IDk2WiIgZmlsbD0iI2ZmZDEwMCIvPgo8cGF0aCBkPSJNNzIgOTZDNzIgODIuNzUgODIuNzUgNzIgOTYgNzJTMTIwIDgyLjc1IDEyMCA5NlMxMDkuMjUgMTIwIDk2IDEyMFM3MiAxMDkuMjUgNzIgOTZaIiBmaWxsPSIjY2UxMTI2Ii8+CjxwYXRoIGQ9Ik04NCA5NkM4NCA4OS4zNyA4OS4zNyA4NCA5NiA4NFMxMDggODkuMzcgMTA4IDk2UzEwMi42MyAxMDggOTYgMTA4Uzg0IDEwMi42MyA4NCA5NloiIGZpbGw9IndoaXRlIi8+CjwvZz4KPC9zdmc+",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iNDgiIGZpbGw9IiMwMDdiZmYiLz4KPHBhdGggZD0iTTEyOCAyNTZDMTI4IDE4NS4zMSAxODUuMzEgMTI4IDI1NiAxMjhTMzg0IDE4NS4zMSAzODQgMjU2UzMyNi42OSAzODQgMjU2IDM4NFMxMjggMzI2LjY5IDEyOCAyNTZaIiBmaWxsPSIjZmZkMTAwIi8+CjxwYXRoIGQ9Ik0xOTIgMjU2QzE5MiAyMjAuNjUgMjIwLjY1IDE5MiAyNTYgMTkyUzMyMCAyMjAuNjUgMzIwIDI1NlMyOTEuMzUgMzIwIDI1NiAzMjBTMTkyIDI5MS4zNSAxOTIgMjU2WiIgZmlsbD0iI2NlMTEyNiIvPgo8cGF0aCBkPSJNMjI0IDI1NkMyMjQgMjM4LjMzIDIzOC4zMyAyMjQgMjU2IDIyNFMyODggMjM4LjMzIDI4OCAyNTZTMjczLjY3IDI4OCAyNTYgMjg4UzIyNCAyNzMuNjcgMjI0IDI1NloiIGZpbGw9IndoaXRlIi8+CjwvZz4KPC9zdmc+",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["utilities", "business", "productivity"],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4MCIgaGVpZ2h0PSI3MjAiIHZpZXdCb3g9IjAgMCAxMjgwIDcyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyODAiIGhlaWdodD0iNzIwIiBmaWxsPSIjZjhmOWZhIi8+CjxyZWN0IHg9IjQwIiB5PSI0MCIgd2lkdGg9IjEyMDAiIGhlaWdodD0iNjQwIiByeD0iMTYiIGZpbGw9IndoaXRlIiBzdHJva2U9IiNkZGQiLz4KPHN2ZyB4PSI1NDAiIHk9IjI4MCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNjAiPgo8dGV4dCB4PSIxMDAiIHk9IjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiMwMDdiZmYiPldpRmkgQmlzb3UgQmlzb3U8L3RleHQ+CjwvZz4KPC9zdmc+",
+      "sizes": "1280x720",
+      "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Acheter un ticket",
+      "short_name": "Ticket",
+      "description": "Acheter un ticket WiFi rapidement",
+      "url": "/?action=buy-ticket",
+      "icons": [
+        {
+          "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiByeD0iMTYiIGZpbGw9IiMwMDdiZmYiLz4KPHBhdGggZD0iTTMyIDY0QzMyIDQ0Ljk5IDQ0Ljk5IDMyIDY0IDMyUzk2IDQ0Ljk5IDk2IDY0Uzg0LjAxIDk2IDY0IDk2UzMyIDg0LjAxIDMyIDY0WiIgZmlsbD0iI2ZmZDEwMCIvPgo8L3N2Zz4=",
+          "sizes": "128x128",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Valider voucher",
+      "short_name": "Valider",
+      "description": "Valider un voucher WiFi",
+      "url": "/?action=validate-voucher",
+      "icons": [
+        {
+          "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiByeD0iMTYiIGZpbGw9IiMyOGE3NDUiLz4KPHBhdGggZD0iTTMyIDY0QzMyIDQ0Ljk5IDQ0Ljk5IDMyIDY0IDMyUzk2IDQ0Ljk5IDk2IDY0Uzg0LjAxIDk2IDY0IDk2UzMyIDg0LjAxIDMyIDY0WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+",
+          "sizes": "128x128",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
