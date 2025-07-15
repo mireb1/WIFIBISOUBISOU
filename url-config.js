@@ -23,11 +23,11 @@ class URLConfig {
             
             // Environnement de production
             production: {
-                baseUrl: 'https://wifibisoubisou.com',
-                apiUrl: 'https://api.wifibisoubisou.com',
+                baseUrl: 'https://mireb1.github.io/WIFIBISOUBISOU',
+                apiUrl: 'https://api.mireb1.github.io/WIFIBISOUBISOU',
                 paymentUrl: 'https://payment.flexpaie.com',
-                websocketUrl: 'wss://wifibisoubisou.com/ws',
-                assetsUrl: 'https://cdn.wifibisoubisou.com/assets',
+                websocketUrl: 'wss://mireb1.github.io/WIFIBISOUBISOU/ws',
+                assetsUrl: 'https://mireb1.github.io/WIFIBISOUBISOU/assets',
                 // Configuration activée
                 active: true,
                 configured: true,
