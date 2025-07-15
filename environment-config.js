@@ -26,7 +26,7 @@ const AppConfig = {
     production: {
         showDemoPanel: false,
         enableDebugLogs: false,
-        apiUrl: 'https://api.wifibisoubisou.com',
+        apiUrl: 'https://mireb1.github.io/WIFIBISOUBISOU/api',
         allowTestPayments: false,
         autoLoadDemoData: false
     },
