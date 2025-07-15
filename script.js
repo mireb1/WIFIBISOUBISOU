@@ -212,10 +212,25 @@ class VoucherManager {
 class NotificationManager {
     constructor() {
         this.notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+        this.container = this.createContainer();
+    }
+
+    createContainer() {
+        const container = document.createElement('div');
+        container.id = 'notification-container';
+        container.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            max-width: 350px;
+        `;
+        document.body.appendChild(container);
+        return container;
     }
 
     // Ajouter une notification
-    addNotification(type, title, message, priority = 'normal') {
+    addNotification(type, title, message, priority = 'normal', duration = 5000) {
         const notification = {
             id: this.generateNotificationId(),
             type: type, // 'success', 'warning', 'error', 'info'
@@ -227,7 +242,7 @@ class NotificationManager {
         };
         this.notifications.unshift(notification);
         this.saveNotifications();
-        this.showNotification(notification);
+        this.showNotification(notification, duration);
         return notification;
     }
 
@@ -237,27 +252,25 @@ class NotificationManager {
     }
 
     // Afficher une notification
-    showNotification(notification) {
+    showNotification(notification, duration) {
         const notificationElement = document.createElement('div');
         notificationElement.className = `notification notification-${notification.type}`;
         notificationElement.innerHTML = `
             <div class="notification-content">
-                <h4>${notification.title}</h4>
-                <p>${notification.message}</p>
+                <strong>${notification.title}</strong>
+                <div>${notification.message}</div>
             </div>
             <button class="notification-close" onclick="this.parentElement.remove()">×</button>
         `;
         
-        // Utiliser le conteneur dédié plutôt que document.body
-        const container = document.getElementById('notifications-container') || document.body;
-        container.appendChild(notificationElement);
+        this.container.appendChild(notificationElement);
         
-        // Auto-supprimer après 5 secondes
+        // Auto-supprimer après la durée spécifiée
         setTimeout(() => {
-            if (notificationElement.parentElement) {
+            if (notificationElement.parentNode) {
                 notificationElement.remove();
             }
-        }, 5000);
+        }, duration);
     }
 
     // Sauvegarder les notifications
@@ -376,70 +389,449 @@ function showDashboardSection(section) {
     loadDashboardSection(section);
 }
 
+// Fonction d'initialisation globale
+function initializeApp() {
+    console.log('🚀 Initialisation de l\'application WiFi Bisou Bisou...');
+    
+    // Initialiser les gestionnaires si ils n'existent pas
+    if (!window.userManager) {
+        window.userManager = new UserManager();
+    }
+    
+    if (!window.voucherManager) {
+        window.voucherManager = new VoucherManager();
+    }
+    
+    if (!window.notificationManager) {
+        window.notificationManager = new NotificationManager();
+    }
+    
+    // Mettre à jour l'interface utilisateur
+    updateUserInterface();
+    
+    // Configurer les gestionnaires d'événements
+    setupEventHandlers();
+    
+    // Afficher la section d'accueil par défaut
+    showSection('home');
+    
+    console.log('✅ Application initialisée avec succès');
+}
+
+// Configuration des gestionnaires d'événements
+function setupEventHandlers() {
+    // Gestionnaire pour les liens de navigation
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const sectionId = this.getAttribute('href').substring(1);
+            if (sectionId === 'dashboard') {
+                showDashboard();
+            } else {
+                showSection(sectionId);
+            }
+        });
+    });
+    
+    // Gestionnaire pour les modales
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal')) {
+            e.target.remove();
+        }
+    });
+    
+    // Gestionnaire pour les boutons de fermeture
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('close')) {
+            const modal = e.target.closest('.modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+    });
+}
+
 // Gestion des achats améliorée
 function buyTicket(planType, price) {
-    selectedPlan = planType;
-    selectedPrice = price;
+    console.log(`🎫 Achat de ticket: ${planType} - ${price} FC`);
     
-    // Vérifier si l'utilisateur est connecté
-    if (!userManager.currentUser) {
+    try {
+        selectedPlan = planType;
+        selectedPrice = price;
+        
+        // Vérifier si l'utilisateur est connecté
+        if (!window.userManager || !window.userManager.currentUser) {
+            showAlert('Vous devez être connecté pour acheter un ticket', 'warning');
+            showUserLoginModal();
+            return;
+        }
+        
+        // Mettre à jour les détails dans le modal
+        const selectedPlanElement = document.getElementById('selected-plan');
+        const selectedPriceElement = document.getElementById('selected-price');
+        
+        if (selectedPlanElement) {
+            selectedPlanElement.textContent = getPlanName(planType);
+        }
+        if (selectedPriceElement) {
+            selectedPriceElement.textContent = price;
+        }
+        
+        // Afficher le modal de paiement
+        const paymentModal = document.getElementById('payment-modal');
+        if (paymentModal) {
+            paymentModal.classList.remove('hidden');
+        } else {
+            // Créer le modal de paiement s'il n'existe pas
+            createPaymentModal(planType, price);
+        }
+        
+        showAlert('Prêt pour le paiement!', 'success');
+        
+    } catch (error) {
+        handleError(error, 'Achat de ticket');
+    }
+}
+
+// Créer le modal de paiement
+function createPaymentModal(planType, price) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'payment-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Paiement - ${getPlanName(planType)}</h3>
+                <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="payment-info">
+                    <p><strong>Forfait:</strong> <span id="selected-plan">${getPlanName(planType)}</span></p>
+                    <p><strong>Prix:</strong> <span id="selected-price">${price}</span> FC</p>
+                    <p><strong>Utilisateur:</strong> ${window.userManager.currentUser.name}</p>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="processPayment()">
+                        <i class="fas fa-credit-card"></i> Payer avec Flexpaie
+                    </button>
+                    <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">
+                        Annuler
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+// Fonction pour afficher les alertes
+function showAlert(message, type = 'info') {
+    if (window.notificationManager) {
+        window.notificationManager.addNotification(type, type.charAt(0).toUpperCase() + type.slice(1), message);
+    } else {
+        alert(message);
+    }
+}
+
+// Fonction pour gérer les erreurs
+function handleError(error, context = 'Application') {
+    console.error(`❌ Erreur dans ${context}:`, error);
+    showAlert(`Erreur: ${error.message || error}`, 'error');
+}
+
+// Améliorer la fonction showDashboard
+function showDashboard() {
+    console.log('📊 Affichage du tableau de bord...');
+    
+    try {
+        // Vérifier si le gestionnaire de tableau de bord existe
+        if (window.dashboardManager) {
+            window.dashboardManager.showSection('routers');
+        } else {
+            // Fallback vers l'ancien système
+            showSection('dashboard');
+            loadDashboardData();
+        }
+    } catch (error) {
+        handleError(error, 'Tableau de bord');
+        // Fallback vers l'ancien système
+        showSection('dashboard');
+        loadDashboardData();
+    }
+}
+
+// Fonction pour valider un voucher
+function validateVoucher() {
+    console.log('🎟️ Validation de voucher...');
+    
+    try {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Valider un Voucher</h3>
+                    <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="voucher-validation-form">
+                        <div class="form-group">
+                            <label for="voucher-code-input">Code du Voucher:</label>
+                            <input type="text" id="voucher-code-input" placeholder="WIFI-2025-XXXXXX" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check"></i> Valider
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                    <div id="validation-result"></div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Gérer la soumission du formulaire
+        document.getElementById('voucher-validation-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const voucherCode = document.getElementById('voucher-code-input').value.trim();
+            
+            if (!voucherCode) {
+                showAlert('Veuillez entrer un code de voucher', 'warning');
+                return;
+            }
+            
+            // Vérifier si le gestionnaire de vouchers existe
+            if (!window.voucherManager) {
+                window.voucherManager = new VoucherManager();
+            }
+            
+            const result = window.voucherManager.useVoucher(voucherCode);
+            
+            const resultDiv = document.getElementById('validation-result');
+            if (result.success) {
+                resultDiv.innerHTML = `
+                    <div class="success-message">
+                        <h4>✅ Voucher validé avec succès!</h4>
+                        <p><strong>Code:</strong> ${voucherCode}</p>
+                        <p><strong>Validité:</strong> ${result.voucher.duration}</p>
+                        <p><strong>Réseau:</strong> ${WIFI_NETWORK_NAME}</p>
+                    </div>
+                `;
+                showAlert('Voucher validé avec succès!', 'success');
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="error-message">
+                        <h4>❌ Échec de validation</h4>
+                        <p>${result.message}</p>
+                    </div>
+                `;
+                showAlert(result.message, 'error');
+            }
+        });
+        
+    } catch (error) {
+        handleError(error, 'Validation de voucher');
+    }
+}
+
+// Améliorer la fonction showUserLoginModal
+function showUserLoginModal() {
+    console.log('👤 Affichage du modal de connexion...');
+    
+    try {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Connexion Utilisateur</h3>
+                    <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="user-login-form">
+                        <div class="form-group">
+                            <label for="user-email">Email:</label>
+                            <input type="email" id="user-email" placeholder="exemple@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="user-phone">Téléphone:</label>
+                            <input type="tel" id="user-phone" placeholder="+243 XX XXX XXXX" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="user-name">Nom (pour nouveaux utilisateurs):</label>
+                            <input type="text" id="user-name" placeholder="Votre nom complet">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt"></i> Se connecter
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Gérer la soumission du formulaire
+        document.getElementById('user-login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleUserLogin();
+        });
+        
+    } catch (error) {
+        handleError(error, 'Modal de connexion');
+    }
+}
+
+// Améliorer handleUserLogin
+function handleUserLogin() {
+    console.log('🔐 Tentative de connexion utilisateur...');
+    
+    try {
+        const email = document.getElementById('user-email').value.trim();
+        const phone = document.getElementById('user-phone').value.trim();
+        const name = document.getElementById('user-name').value.trim();
+        
+        if (!email || !phone) {
+            showAlert('Email et téléphone sont requis', 'warning');
+            return;
+        }
+        
+        // Initialiser le gestionnaire d'utilisateurs si nécessaire
+        if (!window.userManager) {
+            window.userManager = new UserManager();
+        }
+        
+        // Tenter de se connecter
+        let user = window.userManager.authenticateUser(email, phone);
+        
+        // Si l'utilisateur n'existe pas et qu'un nom est fourni, créer un nouveau compte
+        if (!user && name) {
+            user = window.userManager.createUser(email, phone, name);
+            showAlert(`Bienvenue ${name}! Compte créé avec succès.`, 'success');
+        } else if (!user) {
+            showAlert('Utilisateur non trouvé. Veuillez fournir votre nom pour créer un compte.', 'error');
+            return;
+        } else {
+            showAlert(`Bienvenue ${user.name}! Connexion réussie.`, 'success');
+        }
+        
+        // Mettre à jour l'interface utilisateur
+        updateUserInterface();
+        
+        // Fermer le modal
+        const modal = document.querySelector('.modal');
+        if (modal) {
+            modal.remove();
+        }
+        
+    } catch (error) {
+        handleError(error, 'Connexion utilisateur');
+    }
+}
+
+// Améliorer updateUserInterface
+function updateUserInterface() {
+    try {
+        const loginBtn = document.querySelector('.login-btn');
+        if (loginBtn) {
+            if (window.userManager && window.userManager.currentUser) {
+                loginBtn.innerHTML = `<i class="fas fa-user"></i> ${window.userManager.currentUser.name}`;
+                loginBtn.onclick = showUserProfile;
+            } else {
+                loginBtn.innerHTML = '<i class="fas fa-user"></i> Connexion';
+                loginBtn.onclick = showUserLoginModal;
+            }
+        }
+    } catch (error) {
+        console.error('Erreur lors de la mise à jour de l\'interface:', error);
+    }
+}
+
+// Fonction pour afficher le profil utilisateur
+function showUserProfile() {
+    if (!window.userManager || !window.userManager.currentUser) {
         showUserLoginModal();
         return;
     }
     
-    // Mettre à jour les détails dans le modal
-    document.getElementById('selected-plan').textContent = getPlanName(planType);
-    document.getElementById('selected-price').textContent = price;
+    const user = window.userManager.currentUser;
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Profil Utilisateur</h3>
+                <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="user-info">
+                    <p><strong>Nom:</strong> ${user.name}</p>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <p><strong>Téléphone:</strong> ${user.phone}</p>
+                    <p><strong>Total dépensé:</strong> ${user.totalSpent} FC</p>
+                    <p><strong>Vouchers achetés:</strong> ${user.totalVouchers}</p>
+                    <p><strong>Membre depuis:</strong> ${new Date(user.createdAt).toLocaleDateString()}</p>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-danger" onclick="logoutUser()">
+                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
     
-    // Afficher le modal de paiement
-    document.getElementById('payment-modal').classList.remove('hidden');
+    document.body.appendChild(modal);
 }
 
-function getPlanName(planType) {
-    const plans = {
-        'basic': 'Forfait Basique',
-        'premium': 'Forfait Premium',
-        'daily': 'Forfait Journalier'
-    };
-    return plans[planType] || 'Forfait Inconnu';
+// Fonction de déconnexion
+function logoutUser() {
+    if (window.userManager) {
+        window.userManager.currentUser = null;
+        localStorage.removeItem('currentUser');
+        updateUserInterface();
+        showAlert('Déconnexion réussie', 'success');
+    }
+    
+    // Fermer le modal
+    const modal = document.querySelector('.modal');
+    if (modal) {
+        modal.remove();
+    }
 }
 
-function redirectToPayment() {
-    // Simulation d'un paiement réussi après redirection
-    closeModal();
+// Initialiser l'application quand le DOM est chargé
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📱 DOM chargé, initialisation de l\'application...');
     
-    // En production, vous redirigeriez vers Flexpaie
-    // window.location.href = FLEXPAIE_PAYMENT_URL + '?amount=' + selectedPrice;
-    
-    // Simulation du retour de paiement
+    // Attendre que tous les scripts soient chargés
     setTimeout(() => {
-        generateVoucher();
-    }, 2000);
-}
+        initializeApp();
+    }, 100);
+});
 
-// Génération de vouchers améliorée
-function generateVoucher() {
-    const userId = userManager.currentUser ? userManager.currentUser.id : null;
-    const voucher = voucherManager.generateVoucher(selectedPlan, selectedPrice, userId);
-    
-    // Mettre à jour l'interface
-    document.getElementById('voucher-code').textContent = voucher.code;
-    openModal('voucher-modal');
-    
-    // Mettre à jour les statistiques utilisateur
-    if (userId) {
-        userManager.updateUserStats(userId, selectedPrice);
-    }
-    
-    // Notification de succès
-    notificationManager.addNotification('success', 'Voucher généré!', 
-        `Votre voucher ${voucher.code} a été généré avec succès.`);
-    
-    // Créer une session
-    if (userId) {
-        userManager.createSession(userId, voucher.code);
-    }
-}
+// Fonction globale pour debug
+window.debugApp = function() {
+    console.log('🔍 État de l\'application:', {
+        userManager: window.userManager,
+        voucherManager: window.voucherManager,
+        dashboardManager: window.dashboardManager,
+        notificationManager: window.notificationManager,
+        currentUser: window.userManager ? window.userManager.currentUser : null
+    });
+};
 
 // Fonction améliorée pour sauvegarder les vouchers (conservée pour compatibilité)
 function saveVoucher(code, plan, price) {
@@ -654,34 +1046,6 @@ function loadWifiZones() {
     console.log('Chargement des zones WiFi...');
 }
 
-// Gestion des alertes
-function showAlert(message, type = 'info') {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type}`;
-    alertDiv.textContent = message;
-    
-    // Styles pour l'alerte
-    alertDiv.style.cssText = `
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#007bff'};
-        color: white;
-        padding: 1rem 2rem;
-        border-radius: 10px;
-        z-index: 3000;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        animation: slideIn 0.3s ease-out;
-    `;
-    
-    document.body.appendChild(alertDiv);
-    
-    // Supprimer l'alerte après 5 secondes
-    setTimeout(() => {
-        alertDiv.remove();
-    }, 5000);
-}
-
 // Animation pour les alertes
 const style = document.createElement('style');
 style.textContent = `
@@ -759,370 +1123,475 @@ function loadFromLocalStorage(key) {
 
 // Fonctions de gestion des utilisateurs
 function showUserLoginModal() {
+    console.log('👤 Affichage du modal de connexion...');
+    
+    try {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Connexion Utilisateur</h3>
+                    <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="user-login-form">
+                        <div class="form-group">
+                            <label for="user-email">Email:</label>
+                            <input type="email" id="user-email" placeholder="exemple@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="user-phone">Téléphone:</label>
+                            <input type="tel" id="user-phone" placeholder="+243 XX XXX XXXX" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="user-name">Nom (pour nouveaux utilisateurs):</label>
+                            <input type="text" id="user-name" placeholder="Votre nom complet">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt"></i> Se connecter
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Gérer la soumission du formulaire
+        document.getElementById('user-login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleUserLogin();
+        });
+        
+    } catch (error) {
+        handleError(error, 'Modal de connexion');
+    }
+}
+
+// Améliorer handleUserLogin
+function handleUserLogin() {
+    console.log('🔐 Tentative de connexion utilisateur...');
+    
+    try {
+        const email = document.getElementById('user-email').value.trim();
+        const phone = document.getElementById('user-phone').value.trim();
+        const name = document.getElementById('user-name').value.trim();
+        
+        if (!email || !phone) {
+            showAlert('Email et téléphone sont requis', 'warning');
+            return;
+        }
+        
+        // Initialiser le gestionnaire d'utilisateurs si nécessaire
+        if (!window.userManager) {
+            window.userManager = new UserManager();
+        }
+        
+        // Tenter de se connecter
+        let user = window.userManager.authenticateUser(email, phone);
+        
+        // Si l'utilisateur n'existe pas et qu'un nom est fourni, créer un nouveau compte
+        if (!user && name) {
+            user = window.userManager.createUser(email, phone, name);
+            showAlert(`Bienvenue ${name}! Compte créé avec succès.`, 'success');
+        } else if (!user) {
+            showAlert('Utilisateur non trouvé. Veuillez fournir votre nom pour créer un compte.', 'error');
+            return;
+        } else {
+            showAlert(`Bienvenue ${user.name}! Connexion réussie.`, 'success');
+        }
+        
+        // Mettre à jour l'interface utilisateur
+        updateUserInterface();
+        
+        // Fermer le modal
+        const modal = document.querySelector('.modal');
+        if (modal) {
+            modal.remove();
+        }
+        
+    } catch (error) {
+        handleError(error, 'Connexion utilisateur');
+    }
+}
+
+// Fonction pour traiter le paiement
+function processPayment() {
+    console.log('💳 Traitement du paiement...');
+    
+    try {
+        if (!window.userManager || !window.userManager.currentUser) {
+            showAlert('Vous devez être connecté pour effectuer un paiement', 'error');
+            return;
+        }
+        
+        if (!selectedPlan || !selectedPrice) {
+            showAlert('Erreur: Plan ou prix non sélectionné', 'error');
+            return;
+        }
+        
+        const user = window.userManager.currentUser;
+        
+        // Simuler le paiement Flexpaie
+        showAlert('Redirection vers Flexpaie...', 'info');
+        
+        // Créer un faux processus de paiement
+        setTimeout(() => {
+            const isPaymentSuccess = Math.random() > 0.2; // 80% de réussite
+            
+            if (isPaymentSuccess) {
+                // Générer le voucher
+                if (!window.voucherManager) {
+                    window.voucherManager = new VoucherManager();
+                }
+                
+                const voucher = window.voucherManager.generateVoucher(selectedPlan, selectedPrice, user.id);
+                
+                // Mettre à jour les statistiques utilisateur
+                window.userManager.updateUserStats(user.id, selectedPrice);
+                
+                // Afficher le voucher
+                showVoucherResult(voucher);
+                
+                // Fermer le modal de paiement
+                const paymentModal = document.querySelector('#payment-modal');
+                if (paymentModal) {
+                    paymentModal.remove();
+                }
+                
+                showAlert('Paiement réussi! Voucher généré.', 'success');
+                
+            } else {
+                showAlert('Échec du paiement. Veuillez réessayer.', 'error');
+            }
+        }, 2000);
+        
+    } catch (error) {
+        handleError(error, 'Traitement du paiement');
+    }
+}
+
+// Fonction pour afficher le résultat du voucher
+function showVoucherResult(voucher) {
     const modal = document.createElement('div');
     modal.className = 'modal';
     modal.innerHTML = `
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Connexion Utilisateur</h3>
+                <h3>🎉 Voucher Généré avec Succès!</h3>
                 <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
             </div>
             <div class="modal-body">
-                <form id="user-login-form">
-                    <div class="form-group">
-                        <label for="user-email">Email:</label>
-                        <input type="email" id="user-email" required>
+                <div class="voucher-result">
+                    <div class="voucher-card">
+                        <h4>Votre Code WiFi</h4>
+                        <div class="voucher-code">${voucher.code}</div>
+                        <div class="voucher-details">
+                            <p><strong>Forfait:</strong> ${getPlanName(voucher.plan)}</p>
+                            <p><strong>Prix:</strong> ${voucher.price} FC</p>
+                            <p><strong>Valide jusqu'au:</strong> ${new Date(voucher.expiresAt).toLocaleDateString()}</p>
+                            <p><strong>Réseau:</strong> ${WIFI_NETWORK_NAME}</p>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="user-phone">Téléphone:</label>
-                        <input type="tel" id="user-phone" required>
+                    <div class="instructions">
+                        <h5>Instructions d'utilisation:</h5>
+                        <ol>
+                            <li>Connectez-vous au réseau <strong>${WIFI_NETWORK_NAME}</strong></li>
+                            <li>Ouvrez votre navigateur</li>
+                            <li>Entrez le code: <strong>${voucher.code}</strong></li>
+                            <li>Cliquez sur "Se connecter"</li>
+                        </ol>
                     </div>
-                    <div class="form-group">
-                        <label for="user-name">Nom (nouveau utilisateur):</label>
-                        <input type="text" id="user-name" placeholder="Optionnel pour nouveaux utilisateurs">
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Se connecter</button>
-                        <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">Annuler</button>
-                    </div>
-                </form>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="copyVoucherCode('${voucher.code}')">
+                        <i class="fas fa-copy"></i> Copier le Code
+                    </button>
+                    <button class="btn btn-secondary" onclick="printVoucher('${voucher.code}')">
+                        <i class="fas fa-print"></i> Imprimer
+                    </button>
+                    <button class="btn btn-success" onclick="sendVoucherSMS('${voucher.code}')">
+                        <i class="fas fa-sms"></i> Envoyer par SMS
+                    </button>
+                </div>
             </div>
         </div>
     `;
     
     document.body.appendChild(modal);
-    
-    // Gérer la soumission du formulaire
-    document.getElementById('user-login-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        handleUserLogin();
+}
+
+// Fonction pour copier le code voucher
+function copyVoucherCode(code) {
+    navigator.clipboard.writeText(code).then(() => {
+        showAlert('Code copié dans le presse-papiers!', 'success');
+    }).catch(() => {
+        // Fallback pour les navigateurs qui ne supportent pas clipboard
+        const textArea = document.createElement('textarea');
+        textArea.value = code;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showAlert('Code copié!', 'success');
     });
 }
 
-function handleUserLogin() {
-    const email = document.getElementById('user-email').value;
-    const phone = document.getElementById('user-phone').value;
-    const name = document.getElementById('user-name').value;
-    
-    // Tenter de se connecter
-    let user = userManager.authenticateUser(email, phone);
-    
-    // Si l'utilisateur n'existe pas et qu'un nom est fourni, créer un nouveau compte
-    if (!user && name) {
-        user = userManager.createUser(email, phone, name);
-        notificationManager.addNotification('success', 'Compte créé!', 
-            `Bienvenue ${name}! Votre compte a été créé avec succès.`);
-    } else if (!user) {
-        notificationManager.addNotification('error', 'Connexion échouée', 
-            'Utilisateur non trouvé. Veuillez fournir votre nom pour créer un compte.');
+// Fonction pour imprimer le voucher
+function printVoucher(code) {
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Voucher WiFi - ${code}</title>
+            <style>
+                body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+                .voucher { border: 2px solid #007bff; padding: 20px; margin: 20px auto; max-width: 400px; }
+                .code { font-size: 24px; font-weight: bold; color: #007bff; margin: 20px 0; }
+                .network { font-size: 18px; color: #333; }
+            </style>
+        </head>
+        <body>
+            <div class="voucher">
+                <h2>WiFi Bisou Bisou</h2>
+                <div class="code">${code}</div>
+                <div class="network">Réseau: ${WIFI_NETWORK_NAME}</div>
+                <p>Valide jusqu'au: ${new Date(Date.now() + 24*60*60*1000).toLocaleDateString()}</p>
+            </div>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+}
+
+// Fonction pour envoyer par SMS (simulation)
+function sendVoucherSMS(code) {
+    if (!window.userManager || !window.userManager.currentUser) {
+        showAlert('Erreur: Utilisateur non connecté', 'error');
         return;
     }
     
-    // Fermer le modal
-    document.querySelector('.modal').remove();
+    const user = window.userManager.currentUser;
     
-    // Continuer avec l'achat
-    notificationManager.addNotification('success', 'Connexion réussie!', 
-        `Bienvenue ${user.name}!`);
+    // Simuler l'envoi SMS
+    showAlert('Envoi du SMS...', 'info');
     
-    // Procéder à l'achat
-    buyTicket(selectedPlan, selectedPrice);
-}
-
-function showUserProfile() {
-    if (!userManager.currentUser) {
-        showUserLoginModal();
-        return;
-    }
-    
-    const user = userManager.currentUser;
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Profil Utilisateur</h3>
-                <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="user-info">
-                    <h4>${user.name}</h4>
-                    <p><strong>Email:</strong> ${user.email}</p>
-                    <p><strong>Téléphone:</strong> ${user.phone}</p>
-                    <p><strong>Membre depuis:</strong> ${new Date(user.createdAt).toLocaleDateString()}</p>
-                    <p><strong>Total dépensé:</strong> ${user.totalSpent} FC</p>
-                    <p><strong>Vouchers achetés:</strong> ${user.totalVouchers}</p>
-                </div>
-                <div class="user-sessions">
-                    <h4>Sessions actives</h4>
-                    <div id="user-sessions-list"></div>
-                </div>
-                <div class="form-actions">
-                    <button class="btn btn-danger" onclick="logoutUser()">Déconnexion</button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    // Charger les sessions de l'utilisateur
-    loadUserSessions(user.id);
-}
-
-function loadUserSessions(userId) {
-    const sessions = userManager.sessions.filter(s => s.userId === userId);
-    const sessionsList = document.getElementById('user-sessions-list');
-    
-    if (sessions.length === 0) {
-        sessionsList.innerHTML = '<p>Aucune session active</p>';
-        return;
-    }
-    
-    sessionsList.innerHTML = sessions.map(session => `
-        <div class="session-item">
-            <p><strong>Voucher:</strong> ${session.voucherCode}</p>
-            <p><strong>Localisation:</strong> ${session.location}</p>
-            <p><strong>Démarré:</strong> ${new Date(session.startTime).toLocaleString()}</p>
-            <p><strong>Statut:</strong> ${session.isActive ? 'Actif' : 'Terminé'}</p>
-        </div>
-    `).join('');
-}
-
-function logoutUser() {
-    userManager.currentUser = null;
-    localStorage.removeItem('currentUser');
-    document.querySelector('.modal').remove();
-    notificationManager.addNotification('info', 'Déconnexion', 'Vous avez été déconnecté avec succès.');
-    updateUserInterface();
-}
-
-function updateUserInterface() {
-    const loginBtn = document.querySelector('.login-btn');
-    if (userManager.currentUser) {
-        loginBtn.textContent = userManager.currentUser.name;
-        loginBtn.onclick = showUserProfile;
-    } else {
-        loginBtn.textContent = 'Connexion';
-        loginBtn.onclick = showUserLoginModal;
-    }
-}
-
-// Fonction pour valider un voucher
-function validateVoucher() {
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Valider un Voucher</h3>
-                <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <form id="voucher-validation-form">
-                    <div class="form-group">
-                        <label for="voucher-code-input">Code du Voucher:</label>
-                        <input type="text" id="voucher-code-input" placeholder="WIFI-2025-XXXXXX" required>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Valider</button>
-                        <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">Annuler</button>
-                    </div>
-                </form>
-                <div id="validation-result"></div>
-            </div>
-        </div>
-    `;
-    
-    // Utiliser le conteneur dédié plutôt que document.body
-    const container = document.getElementById('dynamic-modals-container') || document.body;
-    container.appendChild(modal);
-    
-    document.getElementById('voucher-validation-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const voucherCode = document.getElementById('voucher-code-input').value;
-        const result = voucherManager.useVoucher(voucherCode);
+    setTimeout(() => {
+        const isSuccess = Math.random() > 0.1; // 90% de réussite
         
-        const resultDiv = document.getElementById('validation-result');
-        if (result.success) {
-            resultDiv.innerHTML = `
-                <div class="success-message">
-                    <h4>Voucher validé avec succès!</h4>
-                    <p><strong>Code:</strong> ${result.voucher.code}</p>
-                    <p><strong>Forfait:</strong> ${getPlanName(result.voucher.plan)}</p>
-                    <p><strong>Prix:</strong> ${result.voucher.price} FC</p>
-                </div>
-            `;
-            notificationManager.addNotification('success', 'Voucher validé!', 
-                `Le voucher ${voucherCode} a été validé avec succès.`);
+        if (isSuccess) {
+            showAlert(`SMS envoyé à ${user.phone} avec le code ${code}`, 'success');
         } else {
-            resultDiv.innerHTML = `
-                <div class="error-message">
-                    <h4>Erreur de validation</h4>
-                    <p>${result.message}</p>
-                </div>
-            `;
-            notificationManager.addNotification('error', 'Validation échouée', result.message);
+            showAlert('Échec de l\'envoi SMS. Veuillez réessayer.', 'error');
+        }
+    }, 2000);
+}
+
+// Fonction pour charger les données du tableau de bord
+function loadDashboardData() {
+    console.log('📊 Chargement des données du tableau de bord...');
+    
+    try {
+        // Vérifier si les gestionnaires existent
+        if (!window.voucherManager) {
+            window.voucherManager = new VoucherManager();
+        }
+        
+        if (!window.userManager) {
+            window.userManager = new UserManager();
+        }
+        
+        // Calculer les statistiques
+        const stats = {
+            totalVouchers: window.voucherManager.vouchers.length,
+            activeVouchers: window.voucherManager.vouchers.filter(v => v.status === 'active').length,
+            usedVouchers: window.voucherManager.usedVouchers.length,
+            totalUsers: window.userManager.users.length,
+            totalRevenue: window.userManager.users.reduce((sum, user) => sum + user.totalSpent, 0)
+        };
+        
+        // Mettre à jour l'interface
+        updateDashboardStats(stats);
+        
+        console.log('✅ Données du tableau de bord chargées');
+        
+    } catch (error) {
+        handleError(error, 'Chargement du tableau de bord');
+    }
+}
+
+// Fonction pour mettre à jour les statistiques du tableau de bord
+function updateDashboardStats(stats) {
+    const elements = {
+        'total-vouchers': stats.totalVouchers,
+        'active-vouchers': stats.activeVouchers,
+        'used-vouchers': stats.usedVouchers,
+        'total-users': stats.totalUsers,
+        'total-revenue': stats.totalRevenue + ' FC'
+    };
+    
+    Object.entries(elements).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = value;
         }
     });
 }
 
 // Fonction pour afficher les statistiques détaillées
 function showDetailedStats() {
-    const voucherStats = voucherManager.getVoucherStats();
-    const activeSessions = userManager.getActiveSessions();
+    console.log('📈 Affichage des statistiques détaillées...');
     
-    const modal = document.createElement('div');
-    modal.className = 'modal modal-large';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Statistiques Détaillées</h3>
-                <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h4>Vouchers</h4>
-                        <p>Total: ${voucherStats.total}</p>
-                        <p>Actifs: ${voucherStats.active}</p>
-                        <p>Utilisés: ${voucherStats.used}</p>
-                        <p>Expirés: ${voucherStats.expired}</p>
-                    </div>
-                    <div class="stat-card">
-                        <h4>Revenus</h4>
-                        <p>Total: ${voucherStats.totalRevenue} FC</p>
-                        <p>Aujourd'hui: ${getTodayRevenue()} FC</p>
-                    </div>
-                    <div class="stat-card">
-                        <h4>Utilisateurs</h4>
-                        <p>Total: ${userManager.users.length}</p>
-                        <p>Sessions actives: ${activeSessions.length}</p>
+    try {
+        if (!window.voucherManager) {
+            window.voucherManager = new VoucherManager();
+        }
+        
+        if (!window.userManager) {
+            window.userManager = new UserManager();
+        }
+        
+        const stats = {
+            vouchers: {
+                total: window.voucherManager.vouchers.length,
+                active: window.voucherManager.vouchers.filter(v => v.status === 'active').length,
+                used: window.voucherManager.usedVouchers.length,
+                expired: window.voucherManager.vouchers.filter(v => v.status === 'expired').length
+            },
+            users: {
+                total: window.userManager.users.length,
+                active: window.userManager.users.filter(u => u.isActive).length
+            },
+            revenue: {
+                total: window.userManager.users.reduce((sum, user) => sum + user.totalSpent, 0),
+                today: calculateTodayRevenue(),
+                thisMonth: calculateMonthRevenue()
+            }
+        };
+        
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>📊 Statistiques Détaillées</h3>
+                    <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>Vouchers</h4>
+                            <p>Total: ${stats.vouchers.total}</p>
+                            <p>Actifs: ${stats.vouchers.active}</p>
+                            <p>Utilisés: ${stats.vouchers.used}</p>
+                            <p>Expirés: ${stats.vouchers.expired}</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Utilisateurs</h4>
+                            <p>Total: ${stats.users.total}</p>
+                            <p>Actifs: ${stats.users.active}</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Revenus</h4>
+                            <p>Total: ${stats.revenue.total} FC</p>
+                            <p>Aujourd'hui: ${stats.revenue.today} FC</p>
+                            <p>Ce mois: ${stats.revenue.thisMonth} FC</p>
+                        </div>
                     </div>
                 </div>
-                <div class="chart-container">
-                    <h4>Activité par heure</h4>
-                    <div id="activity-chart"></div>
-                </div>
             </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    // Générer un graphique simple
-    generateActivityChart();
+        `;
+        
+        document.body.appendChild(modal);
+        
+    } catch (error) {
+        handleError(error, 'Statistiques détaillées');
+    }
 }
 
-function getTodayRevenue() {
+// Fonction pour calculer les revenus du jour
+function calculateTodayRevenue() {
     const today = new Date().toDateString();
-    return voucherManager.vouchers
+    return window.voucherManager.vouchers
         .filter(v => new Date(v.createdAt).toDateString() === today)
         .reduce((sum, v) => sum + v.price, 0);
 }
 
-function generateActivityChart() {
-    const chartContainer = document.getElementById('activity-chart');
-    const hours = Array.from({length: 24}, (_, i) => i);
+// Fonction pour calculer les revenus du mois
+function calculateMonthRevenue() {
+    const thisMonth = new Date().getMonth();
+    const thisYear = new Date().getFullYear();
     
-    const chartData = hours.map(hour => {
-        const count = voucherManager.vouchers.filter(v => {
-            const voucherHour = new Date(v.createdAt).getHours();
-            return voucherHour === hour;
-        }).length;
-        return { hour, count };
-    });
-    
-    const maxCount = Math.max(...chartData.map(d => d.count));
-    
-    chartContainer.innerHTML = `
-        <div class="chart-bars">
-            ${chartData.map(d => `
-                <div class="chart-bar" style="height: ${maxCount > 0 ? (d.count / maxCount) * 100 : 0}%;" 
-                     title="${d.hour}h: ${d.count} vouchers">
-                    <span class="bar-label">${d.hour}h</span>
-                </div>
-            `).join('')}
-        </div>
-    `;
+    return window.voucherManager.vouchers
+        .filter(v => {
+            const voucherDate = new Date(v.createdAt);
+            return voucherDate.getMonth() === thisMonth && voucherDate.getFullYear() === thisYear;
+        })
+        .reduce((sum, v) => sum + v.price, 0);
 }
 
-// Enregistrement du Service Worker
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js')
-            .then(function(registration) {
-                console.log('Service Worker enregistré avec succès:', registration.scope);
-                
-                // Écouter les mises à jour
-                registration.addEventListener('updatefound', function() {
-                    const newWorker = registration.installing;
-                    newWorker.addEventListener('statechange', function() {
-                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            // Nouvelle version disponible
-                            if (window.notificationManager) {
-                                window.notificationManager.addNotification('info', 'Mise à jour disponible', 
-                                    'Une nouvelle version est disponible. Rechargez la page pour l\'activer.');
-                            }
-                        }
-                    });
-                });
-            })
-            .catch(function(error) {
-                console.log('Erreur lors de l\'enregistrement du Service Worker:', error);
-            });
-    });
-}
-
-// Gestion de l'installation PWA
-let deferredPrompt;
-
-window.addEventListener('beforeinstallprompt', function(e) {
-    e.preventDefault();
-    deferredPrompt = e;
+// Fonction pour charger une section spécifique du tableau de bord
+function loadDashboardSection(section) {
+    console.log(`📋 Chargement de la section: ${section}`);
     
-    // Afficher un bouton d'installation personnalisé
-    const installBtn = document.createElement('button');
-    installBtn.textContent = 'Installer l\'application';
-    installBtn.className = 'btn btn-primary install-btn';
-    installBtn.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-        z-index: 1000;
-        display: none;
-    `;
-    
-    installBtn.addEventListener('click', function() {
-        installBtn.style.display = 'none';
-        
-        deferredPrompt.prompt();
-        
-        deferredPrompt.userChoice.then(function(choiceResult) {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('PWA installée');
-                if (window.notificationManager) {
-                    window.notificationManager.addNotification('success', 'Installation réussie!', 
-                        'WiFi Bisou Bisou a été installé sur votre appareil.');
-                }
+    try {
+        // Vérifier si le gestionnaire de tableau de bord existe
+        if (window.dashboardManager && typeof window.dashboardManager.showSection === 'function') {
+            window.dashboardManager.showSection(section);
+        } else {
+            // Fallback pour les sections de base
+            switch (section) {
+                case 'overview':
+                    loadDashboardData();
+                    break;
+                case 'vouchers':
+                    showVoucherList();
+                    break;
+                case 'users':
+                    showUserList();
+                    break;
+                case 'stats':
+                    showDetailedStats();
+                    break;
+                default:
+                    console.warn(`Section inconnue: ${section}`);
             }
-            deferredPrompt = null;
-        });
-    });
-    
-    document.body.appendChild(installBtn);
-    
-    // Afficher le bouton après un délai
-    setTimeout(() => {
-        installBtn.style.display = 'block';
-    }, 5000);
-});
-
-// Détecter si l'app est lancée depuis l'écran d'accueil
-window.addEventListener('appinstalled', function(evt) {
-    console.log('PWA installée depuis l\'écran d\'accueil');
-    if (window.notificationManager) {
-        window.notificationManager.addNotification('success', 'Application installée!', 
-            'WiFi Bisou Bisou est maintenant disponible sur votre écran d\'accueil.');
+        }
+        
+    } catch (error) {
+        handleError(error, `Section ${section}`);
     }
-});
+}
+
+// Fonction pour afficher la liste des vouchers
+function showVoucherList() {
+    if (!window.voucherManager) {
+        window.voucherManager = new VoucherManager();
+    }
+    
+    const vouchers = window.voucherManager.vouchers;
+    console.log('🎟️ Affichage de la liste des vouchers:', vouchers.length);
+    
+    // Cette fonction pourrait être étendue pour afficher une liste complète
+    showAlert(`${vouchers.length} vouchers trouvés`, 'info');
+}
+
+// Fonction pour afficher la liste des utilisateurs
+function showUserList() {
+    if (!window.userManager) {
+        window.userManager = new UserManager();
+    }
+    
+    const users = window.userManager.users;
+    console.log('👥 Affichage de la liste des utilisateurs:', users.length);
+    
+    // Cette fonction pourrait être étendue pour afficher une liste complète
+    showAlert(`${users.length} utilisateurs trouvés`, 'info');
+}
